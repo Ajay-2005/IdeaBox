@@ -1,7 +1,218 @@
-.navbar-brand {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5em;
-    padding-left: 100px;
-    color: #f6f0f0;
-    letter-spacing: 1px;
+/* style.css */
+
+.custom-navbar {
+    background-color: #007BFF
 }
+
+.title {
+    font-family: 'Patrick Hand', sans-serif;
+    display: flex;
+    align-items: center;
+}
+
+.title-idea,
+.title-box {
+    letter-spacing: 2px;
+}
+
+.custom-icon {
+    color: #FFC107;
+}
+
+.navbar-brand {
+    font-size: 1.5em;
+    padding-left: 50px;
+}
+
+.custom-navbar {
+    background-color: #007BFF;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+
+.hero-section {
+    background: linear-gradient(100deg, #007BFF, #4CAF50);
+    color: #FFFFFF;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    background-size: cover;
+    background-position: top right;
+    box-sizing: border-box;
+}
+
+
+.hero-content {
+    max-width: 800px;
+    padding: 20px;
+}
+
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    font-family: 'Patrick Hand', sans-serif;
+}
+
+
+.hero-content p {
+    font-size: 1.25rem;
+    margin: 0 0 30px 0;
+}
+
+
+.hero-buttons .btn {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.hero-buttons .btn-primary {
+    background-color: #FFD700;
+    color: #333;
+    border: none;
+}
+
+.hero-buttons .btn-outline-light {
+    color: #FFFFFF;
+    border: 1px solid #FFFFFF;
+}
+
+.hero-buttons .btn:hover {
+    opacity: 0.9;
+}
+
+.features-section {
+    background-color: #f1e7e7;
+}
+
+.features-section h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    font-family: 'Patrick Hand', 'Sans serif';
+}
+
+.features-section .lead {
+    color: #666;
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.feature-box:hover {
+    transform: translateY(-10px);
+}
+
+
+
+
+.how-it-works-section {
+    padding: 50px 0;
+    position: relative;
+    background-color: #f8f2f2;
+    
+}
+
+.how-it-works-section h2 {
+    font-size: 2.5rem;
+    padding-bottom: 50px;
+    font-weight: 700;
+    color: #333;
+    font-family: 'Patrick Hand', 'Sans serif';
+}
+
+.map-container {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content:space-between;
+    align-items: center;
+    gap: 50px;
+    position: relative;
+    max-width: 1250px;
+    margin: 0 100px;
+    padding-left: 50px;
+}
+
+
+.step {
+    width: 150px;
+    text-align: center;
+    position: relative;
+}
+
+
+.connector-arrow {
+    width: 175px;
+    height: 2px;
+    background-color: #007bff;
+    position: absolute;
+    top: 50%;
+    right: -175px;
+
+}
+
+.step-1 .connector-arrow {
+    right: -175px;
+}
+
+.step-2 .connector-arrow {
+    right: -175x;
+}
+
+.step-3 .connector-arrow {
+    right: -175px;
+}
+.step-4 .connector-arrow{
+    display: none
+}
+
+.step i {
+    font-size: 2.5em;
+    color: white;
+    background-color: #007bff;
+    padding: 15px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+}
+
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+
+    .hero-buttons .btn {
+        font-size: 0.9rem;
+    }
+    .map-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px; 
+        padding: 0;
+    }
+
+    .connector-arrow {
+       display: none;
+    }
+
+    .step {
+        width: auto;
+    }
+      
+}  
