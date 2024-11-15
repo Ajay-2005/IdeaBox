@@ -106,7 +106,7 @@ html {
 }
 
 .features-section .lead {
-    color: #666;
+    color: #333;
     font-size: 1.25rem;
     margin-bottom: 2rem;
 }
@@ -115,16 +115,12 @@ html {
     transform: translateY(-10px);
 }
 
-
-
-
 .how-it-works-section {
     padding: 50px 0;
     position: relative;
     background-color: #f8f2f2;
     
 }
-
 .how-it-works-section h2 {
     font-size: 2.5rem;
     padding-bottom: 50px;
@@ -132,7 +128,6 @@ html {
     color: #333;
     font-family: 'Patrick Hand', 'Sans serif';
 }
-
 .map-container {
     display: flex;
     flex-wrap: nowrap;
@@ -144,15 +139,11 @@ html {
     margin: 0 100px;
     padding-left: 50px;
 }
-
-
 .step {
     width: 150px;
     text-align: center;
     position: relative;
 }
-
-
 .connector-arrow {
     width: 175px;
     height: 2px;
@@ -162,7 +153,6 @@ html {
     right: -175px;
 
 }
-
 .step-1 .connector-arrow {
     right: -175px;
 }
@@ -185,6 +175,27 @@ html {
     padding: 15px;
     border-radius: 50%;
     margin-bottom: 15px;
+}
+.contact-section{
+    background-color: #f8f2f2;
+    padding:60px 0;
+}
+.contact-section h2{
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    font-family: 'Patrick Hand', 'Sans serif';
+}
+.form-control{
+    border-radius: 0.05rem;
+    text-decoration:none;
+}
+
+.contact-section .btn-primary{
+    width: 100%;
+}
+.contact-section .btn-primary:hover{
+    background-color: #007bff;
 }
 
 
