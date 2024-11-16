@@ -16,10 +16,26 @@ class CustomLoginForm(AuthenticationForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
 
-        self.helper.add_input(Submit(
-            'login', 'Sign In', css_class='btn btn-success', style="width: 100%; font-size: 1.2rem;"))
+        self.fields['username'].label="Username or email"
+        self.fields['username'].widget.attrs.update({
+            'placeholder': 'Username or Email',
+            'class': 'form-control'
+        })
+        self.fields['password'].widget.attrs.update({
+            'placeholder': 'Password',
+            'class': 'form-control'
+        })
 
-
+    def clean_username(self):
+        username_or_email = self.cleaned_data['username']
+        if '@' in username_or_email:
+            if not user.objects.filter(email=username_or_email).exists():
+                raise ValidationError("No user with this email address exists.")
+        else:
+            if not user.objects.filter(username=username_or_email).exists():
+                raise ValidationError("No user with this username exists.")
+        return username_or_email
+    
 class CustomSignupForm(UserCreationForm):
     role = forms.ChoiceField(choices=user.ROLE_CHOICES)
     class Meta:

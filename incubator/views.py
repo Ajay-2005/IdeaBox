@@ -3,9 +3,10 @@ from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
 from django.http import JsonResponse
-from .forms import CustomSignupForm
+from .forms import CustomSignupForm,CustomLoginForm
 from .utils import send_otp
 from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, login
 
 User=get_user_model()
 def home(request):
@@ -38,7 +39,6 @@ def home(request):
 def register(request):
     if request.method=='POST':
         form = CustomSignupForm(request.POST) 
-        print(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False  
@@ -81,3 +81,41 @@ def verify_otp(request):
             messages.error(request, "User not found.")
 
     return render(request,'verify_otp.html')
+
+def login_view(request):
+    if request.method == 'POST':
+        form = CustomLoginForm(request, data=request.POST)
+
+        if not form.is_valid():
+            print("Form errors:", form.errors)
+
+        if form.is_valid():
+            username_or_email = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            if '@' in username_or_email:
+                try:
+                    user_obj = User.objects.get(email=username_or_email)
+                    username = user_obj.username
+                except User.DoesNotExist:
+                    messages.error(request, "Invalid email or password.")
+                    return render(request, 'login.html', {'form': form})
+            else:
+                username = username_or_email
+
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
+
+                if not form.cleaned_data.get('remember_me'):
+                    request.session.set_expiry(0)
+
+                return redirect('home') 
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = CustomLoginForm()
+
+    return render(request, 'login.html', {'form': form})
