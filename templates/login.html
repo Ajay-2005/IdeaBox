@@ -22,19 +22,21 @@
                         </ul>
                     </div>
                     {% endif %}
-                    
+
                     <form method="post" novalidate>
                         {% csrf_token %}
                         {{ form|crispy }}
-                        <button type="submit" class="btn btn-primary w-100 fw-bold" style="font-size: 1.2rem; margin-top: 10px;">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold"
+                            style="font-size: 1.2rem; margin-top: 10px;">
                             login
                         </button>
                     </form>
-                    
+
                     <hr class="my-4">
                     <div class="text-center">
-                        <p class="mb-0">Didn't  have an account? 
-                            <a href="" class="text-decoration-none text-primary fw-bold">Register</a>
+                        <p class="mb-0">Didn't have an account?
+                            <a href="{% url 'register' %}"
+                                class="text-decoration-none text-primary fw-bold">Register</a>
                         </p>
                     </div>
                 </div>

@@ -119,3 +119,14 @@ def login_view(request):
         form = CustomLoginForm()
 
     return render(request, 'login.html', {'form': form})
+
+def resend_otp(request):
+    email = request.session.get("email")
+
+    try:
+        user = User.objects.get(email=email)
+        send_otp(user)
+        messages.success(request, "A new OTP has been sent to your email.")
+    except User.DoesNotExist:
+        messages.error(request, "User not found.")
+    return redirect("verify_otp")
