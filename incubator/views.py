@@ -3,11 +3,13 @@ from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
 from django.http import JsonResponse
+from django.utils.timezone import now, timedelta
 from .forms import CustomSignupForm,CustomLoginForm
 from .utils import send_otp
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate, login
-
+from django.urls import reverse
+from django.contrib.auth.hashers import make_password
 User=get_user_model()
 def home(request):
     if request.method == "POST":
@@ -130,3 +132,51 @@ def resend_otp(request):
     except User.DoesNotExist:
         messages.error(request, "User not found.")
     return redirect("verify_otp")
+
+
+def forgot_password(request):
+    if request.method=='POST':
+        email=request.POST.get('email')
+        try:
+            user=User.objects.get(email=email)
+            otp=user.generate_otp()
+            otp_hash=user.otp_hash
+            reset_link = request.build_absolute_uri(
+                reverse('reset_password') + f'?email={email}&otp={otp_hash}'
+            )
+            subject="Reset your password"
+            message=f"Click the link to reset your password:{reset_link}"
+            from_email = settings.EMAIL_HOST_USER 
+            send_mail(
+                subject,
+                message,
+                from_email,
+                [email],
+                fail_silently=False         
+            )
+            messages.success(request,"Password reset link sent to your email")
+        except User.DoesNotExist:
+            messages.error(request,"No accound found with this email")
+            return redirect('forgot_password')
+    
+    return render(request,'forgot_password.html')
+
+def reset_password(request):
+    email=request.GET['email']
+    otp_hash=request.GET['otp']
+    if request.method=='POST':
+        new_password=request.POST['password']
+        try:
+            user=User.objects.get(email=email)
+            if user.otp_hash == otp_hash and now() <= user.otp_created_at + timedelta(minutes=5):
+                user.password=make_password(new_password)
+                user.otp_hash=None
+                user.save()
+                messages.success(request,"Password reset suceessfully")
+                return redirect('home')
+            else:
+                messages.error(request,"invalid reset link")
+        except User.DoesNotExist:
+            messages.error(request,"No accound found with this email")
+    
+    return render(request,'reset_password.html')

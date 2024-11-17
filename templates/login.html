@@ -26,12 +26,18 @@
                     <form method="post" novalidate>
                         {% csrf_token %}
                         {{ form|crispy }}
+                        <div class="text-center">
+                            <p class="mt-3">
+                                <a href="{% url 'forgot_password' %}"
+                                    class="text-decoration-none">forgot your password?</a>
+                            </p>
+                        </div>
                         <button type="submit" class="btn btn-primary w-100 fw-bold"
                             style="font-size: 1.2rem; margin-top: 10px;">
                             login
                         </button>
                     </form>
-
+                   
                     <hr class="my-4">
                     <div class="text-center">
                         <p class="mb-0">Didn't have an account?
