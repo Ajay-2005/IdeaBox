@@ -30,16 +30,30 @@ class User(AbstractUser):
         return False
 
 
-
 class Profile(models.Model):
-    username=models.OneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-    skills=models.CharField(max_length=260,blank=True,null=True)
-    education=models.CharField(max_length=260,blank=True,null=True)
-    experience=models.CharField(max_length=260,blank=True,null=True)
-    bio=models.CharField(blank=True,null=True)
-
-
+    username = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
+    linkedin = models.URLField(blank=True, null=True) 
+    twitter = models.URLField(blank=True, null=True) 
+    github = models.URLField(blank=True, null=True)   
+    skills = models.ManyToManyField('Skill', blank=True)
+    education = models.CharField(max_length=260, blank=True, null=True)
+    experience = models.TextField(blank=True, null=True) 
+    bio = models.TextField(blank=True, null=True) 
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    status = models.CharField(max_length=100, choices=[('Available', 'Available'), ('Not Available', 'Not Available')], default='Available')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     def __str__(self):
         return f"{self.username}"
+
+class Skill(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
     
 

@@ -7,6 +7,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+from .models import Profile
 
 user=get_user_model()
 class CustomLoginForm(AuthenticationForm):
@@ -64,3 +65,76 @@ class CustomSignupForm(UserCreationForm):
             raise ValidationError("Passwords do not match")
 
         return cleaned_data
+    
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = [
+            'profile_picture',  # Moved to the top for better UI flow
+            'bio',
+            'skills',
+            'education',
+            'experience',
+            'phone_number',
+            'location',
+            'linkedin',
+            'twitter',
+            'github',
+            'status',
+        ]
+
+    bio = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write a short bio'}),
+        required=False
+    )
+    profile_picture = forms.ImageField(
+        widget=forms.FileInput(attrs={'class': 'form-control-file'}),
+        required=False
+    )
+    phone_number = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Phone Number'}),
+        required=False
+    )
+    location = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Location'}),
+        required=False
+    )
+    linkedin = forms.URLField(
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'LinkedIn Profile URL'}),
+        required=False
+    )
+    twitter = forms.URLField(
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'Twitter Profile URL'}),
+        required=False
+    )
+    github = forms.URLField(
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'GitHub Profile URL'}),
+        required=False
+    )
+    status = forms.ChoiceField(
+        choices=[('Available', 'Available'), ('Not Available', 'Not Available')],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    skills = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter your skills'}),
+        required=False
+    )
+    education = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter your education'}),
+        required=False
+    )
+    experience = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter your experience'}),
+        required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(ProfileUpdateForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'POST'
+        self.helper.form_action = ''
+        self.helper.add_input(Submit('submit', 'Update Profile', css_class='btn btn-primary'))
+
+   

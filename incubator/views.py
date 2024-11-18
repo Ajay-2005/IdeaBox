@@ -4,11 +4,12 @@ from django.contrib import messages
 from django.conf import settings
 from django.http import JsonResponse
 from django.utils.timezone import now, timedelta
-from .forms import CustomSignupForm,CustomLoginForm
+from .forms import CustomSignupForm,CustomLoginForm,ProfileUpdateForm
 from .utils import send_otp
 from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 User=get_user_model()
 def home(request):
@@ -73,9 +74,9 @@ def verify_otp(request):
                 user.otp_hash = None  
                 user.otp_created_at = None
                 user.save()
-
                 messages.success(request, "Your account has been activated successfully!")
-                return redirect("/")
+                login(request, user)
+                return redirect('profile_setup')
             else:
                 messages.error(request, "Invalid or expired OTP. Please try again.")
 
@@ -111,8 +112,9 @@ def login_view(request):
 
                 if not form.cleaned_data.get('remember_me'):
                     request.session.set_expiry(0)
+                next_url = request.GET.get('next')
 
-                return redirect('home') 
+                return redirect(next_url or 'home') 
             else:
                 messages.error(request, "Invalid username or password.")
         else:
@@ -132,6 +134,11 @@ def resend_otp(request):
     except User.DoesNotExist:
         messages.error(request, "User not found.")
     return redirect("verify_otp")
+
+def logout_view(request):
+    logout(request)  
+    messages.success(request, "You have been logged out successfully.") 
+    return redirect('login')  
 
 
 def forgot_password(request):
@@ -180,3 +187,19 @@ def reset_password(request):
             messages.error(request,"No accound found with this email")
     
     return render(request,'reset_password.html')
+
+
+@login_required
+def profile_setup(request):
+    if request.method == 'POST':
+        form = ProfileUpdateForm(request.POST, request.FILES)  # Handling POST data
+        if form.is_valid():
+            form.save()  # Save the form data
+            messages.success(request, "Profile updated successfully.")
+            return redirect('/')
+    
+    form = ProfileUpdateForm()  
+
+    return render(request, 'profile_setup.html', {'form': form})
+
+

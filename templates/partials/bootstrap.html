@@ -49,15 +49,17 @@
                     <li class="nav-item">
                         <a class="nav-link text-white" href="#">Discussion Forum</a>
                     </li>
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Collaboration</a>
+                        <a class="nav-link text-white" href="{% url 'logout' %}">Logout</a>
                     </li>
+                    {% else %}
+
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Profile</a>
+                        <a class="nav-link text-white" href="{% url 'login' %}">Login</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Login</a>
-                    </li>
+                    {% endif %}
+
                 </ul>
             </div>
         </div>
