@@ -10,6 +10,7 @@
       <input type="file" id="profile_picture" name="profile_picture" class="form-control">
     </div>
 
+
     <div class="form-group mb-3">
       <label for="bio" class="form-label">Bio</label>
       <textarea id="bio" name="bio" class="form-control" placeholder="Bio" rows="5">{{ profile.bio }}</textarea>
@@ -17,7 +18,8 @@
 
     <div class="form-group mb-3">
       <label for="education" class="form-label">Education</label>
-      <textarea id="education" name="education" class="form-control" placeholder="Education">{{ profile.education }}</textarea>
+      <textarea id="education" name="education" class="form-control"
+        placeholder="Education">{{ profile.education }}</textarea>
     </div>
 
     <div class="form-group mb-3">
@@ -59,10 +61,14 @@
     <div class="form-group mb-3">
       <label for="status" class="form-label">Status</label>
       <select id="status" name="status" class="form-select">
-        <option value="Available" {% if profile.status == "Available" %}selected{% endif %}>Available</option>
-        <option value="Not Available" {% if profile.status == "Not Available" %}selected{% endif %}>Not Available</option>
+        <option value="Available" >Available
+        </option>
+        <option value="Not Available">Not
+          Available</option>
       </select>
+
     </div>
+
 
     <div class="form-group mb-3">
       <label class="form-label">Skills</label><br>
@@ -83,9 +89,9 @@
     searchInput.addEventListener("input", function () {
       const query = searchInput.value;
       fetch(`/skills-autocomplete?term=${encodeURIComponent(query)}`)
-        .then((response)=>response.json())
+        .then((response) => response.json())
         .then((data) => {
-          
+
           skillsContainer.innerHTML = "";
           data.results.forEach((skill) => {
             const skillElement = `

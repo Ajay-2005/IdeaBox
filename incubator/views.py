@@ -227,13 +227,14 @@ def profile_setup(request):
             
         profile.save()
 
-        return redirect('/')
-    
-    return render(request, 'profile_setup.html')
+        return redirect('profile')
+    return render(request, 'profile_setup.html',{'profile':profile})
+@login_required
+def profile(request):
+    profile=Profile.objects.get(username=request.user)
+    return render(request,'profile.html',{'profile':profile})
 
-from django.http import JsonResponse
-from django_select2.views import AutoResponseView
-from .models import Skill
+
 
 class CustomSkillAutoResponseForm(AutoResponseView):
     def get(self, request, *args, **kwargs):

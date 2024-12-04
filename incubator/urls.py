@@ -14,6 +14,7 @@ urlpatterns = [
     path('otp/resend/', views.resend_otp, name='resend_otp'),
     path('profile/setup/', views.profile_setup, name='profile_setup'),
     path('skills-autocomplete/', CustomSkillAutoResponseForm.as_view(), name='skills-autocomplete'),
+    path('profile/',views.profile,name='profile')
 ]
     
 
