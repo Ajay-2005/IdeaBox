@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'incubator',
     'crispy_forms',
-    'crispy_bootstrap5'
+    'crispy_bootstrap5',
+    'django_select2'
 ]
 
 
@@ -153,7 +154,10 @@ STATICFILES_DIRS = [
 
 # STATIC_ROOT is where `collectstatic` will store the final version of static files
 # Make sure this is a separate directory for collected static files during production
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production collection of static files
+STATIC_ROOT = BASE_DIR / 'staticfiles'  
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

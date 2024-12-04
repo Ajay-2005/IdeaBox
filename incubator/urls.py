@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import CustomSkillAutoResponseForm
 
 urlpatterns = [
     # Home page
@@ -12,5 +13,7 @@ urlpatterns = [
     path('otp/verify/', views.verify_otp, name='verify_otp'),
     path('otp/resend/', views.resend_otp, name='resend_otp'),
     path('profile/setup/', views.profile_setup, name='profile_setup'),
-    
+    path('skills-autocomplete/', CustomSkillAutoResponseForm.as_view(), name='skills-autocomplete'),
 ]
+    
+

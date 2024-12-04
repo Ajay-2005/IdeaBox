@@ -4,14 +4,16 @@ from django.contrib import messages
 from django.conf import settings
 from django.http import JsonResponse
 from django.utils.timezone import now, timedelta
-from .forms import CustomSignupForm,CustomLoginForm,ProfileUpdateForm
+from .forms import CustomSignupForm,CustomLoginForm
 from .utils import send_otp
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate, login,logout
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django_select2.views import AutoResponseView
 User=get_user_model()
+from .models import Profile,Skill
 def home(request):
     if request.method == "POST":
         name = request.POST.get('name', '').strip()
@@ -191,15 +193,52 @@ def reset_password(request):
 
 @login_required
 def profile_setup(request):
-    if request.method == 'POST':
-        form = ProfileUpdateForm(request.POST, request.FILES)  # Handling POST data
-        if form.is_valid():
-            form.save()  # Save the form data
-            messages.success(request, "Profile updated successfully.")
-            return redirect('/')
+    profile, created = Profile.objects.get_or_create(username=request.user)
+    if request.method=='POST':
+        profile_picture = request.FILES.get('profile_picture', profile.profile_picture)
+        bio = request.POST.get('bio', '')
+        education = request.POST.get('education', '')
+        experience = request.POST.get('experience', '')
+        phone_number = request.POST.get('phone_number', '')
+        location = request.POST.get('location', '')
+        linkedin = request.POST.get('linkedin', '')
+        twitter = request.POST.get('twitter', '')
+        github = request.POST.get('github', '')
+        status = request.POST.get('status', 'Available')
+        selected_skills = request.POST.getlist('skills') 
+
+        profile.profile_picture = profile_picture
+        profile.bio = bio
+        profile.education = education
+        profile.experience = experience
+        profile.phone_number = phone_number
+        profile.location = location
+        profile.linkedin = linkedin
+        profile.twitter = twitter
+        profile.github = github
+        profile.status = status
+        
+        for skill_id in selected_skills:
+            try:
+                skill=Skill.objects.get(id=skill_id)
+                profile.skills.add(skill)
+            except Skill.DoesNotExist:
+                continue
+            
+        profile.save()
+
+        return redirect('/')
     
-    form = ProfileUpdateForm()  
+    return render(request, 'profile_setup.html')
 
-    return render(request, 'profile_setup.html', {'form': form})
+from django.http import JsonResponse
+from django_select2.views import AutoResponseView
+from .models import Skill
 
-
+class CustomSkillAutoResponseForm(AutoResponseView):
+    def get(self, request, *args, **kwargs):
+        term = self.request.GET.get('term', '').strip()
+        
+        skills = Skill.objects.filter(name__icontains=term) if term else Skill.objects.none()
+        results = [{'id': skill.id, 'text': skill.name} for skill in skills]
+        return JsonResponse({'results': results})

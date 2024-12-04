@@ -30,6 +30,13 @@ class User(AbstractUser):
         return False
 
 
+
+class Skill(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
 class Profile(models.Model):
     username = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
@@ -37,7 +44,7 @@ class Profile(models.Model):
     linkedin = models.URLField(blank=True, null=True) 
     twitter = models.URLField(blank=True, null=True) 
     github = models.URLField(blank=True, null=True)   
-    skills = models.ManyToManyField('Skill', blank=True)
+    skills = models.ManyToManyField(Skill, blank=True)
     education = models.CharField(max_length=260, blank=True, null=True)
     experience = models.TextField(blank=True, null=True) 
     bio = models.TextField(blank=True, null=True) 
@@ -48,12 +55,4 @@ class Profile(models.Model):
     
     def __str__(self):
         return f"{self.username}"
-
-class Skill(models.Model):
-    name = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.name
-
-    
 
