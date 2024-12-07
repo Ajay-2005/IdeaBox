@@ -55,4 +55,23 @@ class Profile(models.Model):
     
     def __str__(self):
         return f"{self.username}"
+    
+class idea(models.Model):
+    title=models.CharField(max_length=150)
+    description=models.TextField()
+    category = models.CharField(max_length=100, choices=[('Tech', 'Tech'), ('Finance', 'Finance'), ('Health', 'Health'),('Entertainment','Entertainment'),('Food','Food')])
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ideas')
+    visibility = models.CharField(
+        max_length=50,
+        choices=[('Public', 'Public'), ('Private', 'Private')],
+        default='Public'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+    
+
+    
+
 

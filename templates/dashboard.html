@@ -1,0 +1,90 @@
+{% extends "partials/bootstrap.html" %}
+{% block navbar %}
+
+
+
+<nav class="navbar navbar-expand-lg custom-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" href="#"><i class="fas fa-lightbulb custom-icon"></i><span
+                class="title-idea">dea</span><span class="title-box">Box</span></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">Profile</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'logout' %}">Logout</a>
+                </li>
+                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">Signup</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'login' %}">Login</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .sidebar{
+        min-height:100vh ;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 col-lg-2 bg-info collapse d-md-block sidebar" id="sidebarMenu">
+            <ul class="nav flex-column p-3">
+                <li class="nav-item">
+                    <a class="nav-link active text-white" href="#">
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        Submit Idea
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        SWOT Analysis
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        Collaboration Requests
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        Feedback
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        Discussion Forum
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-md-9 col-lg-10 p-4">
+            <h2>Welcome to IdeaBox</h2>
+            <p>Your dashboard to manage your startup ideas and collaboration.</p>
+            <!-- Content Goes Here -->
+        </div>
+    </div>
+</div>
+{% endblock %}

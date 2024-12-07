@@ -66,7 +66,6 @@ class CustomSignupForm(UserCreationForm):
             raise ValidationError("Passwords do not match")
 
         return cleaned_data
-    
 
 
 

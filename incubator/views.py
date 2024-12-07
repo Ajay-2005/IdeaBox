@@ -235,7 +235,6 @@ def profile(request):
     return render(request,'profile.html',{'profile':profile})
 
 
-
 class CustomSkillAutoResponseForm(AutoResponseView):
     def get(self, request, *args, **kwargs):
         term = self.request.GET.get('term', '').strip()
@@ -243,3 +242,6 @@ class CustomSkillAutoResponseForm(AutoResponseView):
         skills = Skill.objects.filter(name__icontains=term) if term else Skill.objects.none()
         results = [{'id': skill.id, 'text': skill.name} for skill in skills]
         return JsonResponse({'results': results})
+
+def dashboard(request):
+    return render(request,'dashboard.html')

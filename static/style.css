@@ -197,6 +197,12 @@ html {
 .contact-section .btn-primary:hover{
     background-color: #007bff;
 }
+.sidebar {
+    height: 100vh;
+    background-color: #095cae;
+    color: #fff;
+    padding: 10px;
+}
 
 
 @media (max-width: 768px) {
