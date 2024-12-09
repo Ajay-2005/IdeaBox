@@ -1,12 +1,11 @@
 {% extends "partials/bootstrap.html" %}
 {% block navbar %}
-
-
-
 <nav class="navbar navbar-expand-lg custom-navbar">
     <div class="container-fluid">
-        <a class="navbar-brand text-white" href="#"><i class="fas fa-lightbulb custom-icon"></i><span
-                class="title-idea">dea</span><span class="title-box">Box</span></a>
+        <a class="navbar-brand text-white" href="#">
+            <i class="fas fa-lightbulb custom-icon"></i><span class="title-idea">dea</span><span
+                class="title-box">Box</span>
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -17,18 +16,9 @@
                 <li class="nav-item">
                     <a class="nav-link text-white" href="#">Profile</a>
                 </li>
-                {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'logout' %}">Logout</a>
+                    <a class="nav-link text-white" href="#">Logout</a>
                 </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="#">Signup</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{% url 'login' %}">Login</a>
-                </li>
-                {% endif %}
             </ul>
         </div>
     </div>
@@ -36,54 +26,118 @@
 {% endblock %}
 
 {% block content %}
-
-<style>
-    .sidebar{
-        min-height:100vh ;
-    }
-</style>
 <div class="container-fluid">
     <div class="row">
+        <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 bg-info collapse d-md-block sidebar" id="sidebarMenu">
             <ul class="nav flex-column p-3">
                 <li class="nav-item">
-                    <a class="nav-link active text-white" href="#">
-                        Home
-                    </a>
+                    <a class="nav-link active text-white" href="#">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="#">
+                    <a class="nav-link active text-white" data-bs-toggle="modal" data-bs-target="#submitIdeaModal">
                         Submit Idea
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="#">
-                        SWOT Analysis
-                    </a>
+                    <a class="nav-link text-white" href="#">SWOT Analysis</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="#">
-                        Collaboration Requests
-                    </a>
+                    <a class="nav-link text-white" href="#">Collaboration Requests</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="#">
-                        Feedback
-                    </a>
+                    <a class="nav-link text-white" href="#">Feedback</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="#">
-                        Discussion Forum
-                    </a>
+                    <a class="nav-link text-white" href="#">Discussion Forum</a>
                 </li>
             </ul>
         </div>
 
-        <!-- Main Content Area -->
-        <div class="col-md-9 col-lg-10 p-4">
-            <h2>Welcome to IdeaBox</h2>
-            <p>Your dashboard to manage your startup ideas and collaboration.</p>
-            <!-- Content Goes Here -->
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <!-- Welcome Section -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h2 class="text-center">Welcome, John Doe!</h2>
+                    <p class="text-center text-muted">Here’s a quick overview of your activities on IdeaBox.</p>
+                </div>
+            </div>
+
+            <div class="modal fade" id="submitIdeaModal" tabindex="-1" aria-labelledby="submitIdeaModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="submitIdeaModalLabel">Submit Your Idea</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+            
+                        <!-- Include submit.html content -->
+                        {% include 'submit_idea.html' %}
+                    </div>
+                </div>
+            </div>
+            <!-- Overview Cards -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Feedback Received</h5>
+                            <h2 class="text-primary">15</h2>
+                            <p class="card-text">Total feedback received on your ideas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Collaboration Requests</h5>
+                            <h2 class="text-success">3</h2>
+                            <p class="card-text">Pending collaboration requests.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Discussion Forum</h5>
+                            <h2 class="text-warning">7</h2>
+                            <p class="card-text">Recent activities in the forums.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h4>Recent Activities</h4>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <strong>Alice</strong> commented on "<em>How to validate a startup idea?</em>"
+                            <span class="text-muted float-end">04 Dec 2024, 10:30 AM</span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Bob</strong> commented on "<em>Tips for attracting investors</em>"
+                            <span class="text-muted float-end">03 Dec 2024, 4:45 PM</span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Carol</strong> replied to "<em>Market research tools</em>"
+                            <span class="text-muted float-end">03 Dec 2024, 12:20 PM</span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Dave</strong> started a new discussion "<em>Top 5 pitching techniques</em>"
+                            <span class="text-muted float-end">02 Dec 2024, 8:15 PM</span>
+                        </li>
+                        <li class="list-group-item text-muted">
+
+                            No recent activities in the discussion forums.
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -67,6 +67,3 @@ class CustomSignupForm(UserCreationForm):
 
         return cleaned_data
 
-
-
-   

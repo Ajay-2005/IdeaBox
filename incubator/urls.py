@@ -15,7 +15,10 @@ urlpatterns = [
     path('profile/setup/', views.profile_setup, name='profile_setup'),
     path('skills-autocomplete/', CustomSkillAutoResponseForm.as_view(), name='skills-autocomplete'),
     path('profile/',views.profile,name='profile'),
-    path('dashboard/',views.dashboard,name='dashboard')
+    path('dashboard/',views.dashboard,name='dashboard'),
+    path('submit-idea/',views.submit_idea,name='submit-idea')
+    
+    
 ]
     
 

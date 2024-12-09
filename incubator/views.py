@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.utils.timezone import now, timedelta
 from .forms import CustomSignupForm,CustomLoginForm
 from .utils import send_otp
+import json
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate, login,logout
 from django.urls import reverse
@@ -13,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django_select2.views import AutoResponseView
 User=get_user_model()
-from .models import Profile,Skill
+from .models import Profile,Skill,idea
 def home(request):
     if request.method == "POST":
         name = request.POST.get('name', '').strip()
@@ -227,7 +228,7 @@ def profile_setup(request):
             
         profile.save()
 
-        return redirect('profile')
+        return redirect('dashboard')
     return render(request, 'profile_setup.html',{'profile':profile})
 @login_required
 def profile(request):
@@ -238,10 +239,32 @@ def profile(request):
 class CustomSkillAutoResponseForm(AutoResponseView):
     def get(self, request, *args, **kwargs):
         term = self.request.GET.get('term', '').strip()
-        
         skills = Skill.objects.filter(name__icontains=term) if term else Skill.objects.none()
         results = [{'id': skill.id, 'text': skill.name} for skill in skills]
         return JsonResponse({'results': results})
-
+@login_required
 def dashboard(request):
     return render(request,'dashboard.html')
+
+def submit_idea(request):
+    if request.method=='POST':
+        try:
+            data=json.loads(request.body)
+            print(data)
+            idea.objects.create(
+                title=data.get('title'),
+                description=data.get('description'),
+                category=data.get('category'),
+                creator=request.user,
+                visibility=data['visibility'],
+                target_audience=data.get('targetAudience'),
+                market_opportunity=data.get('marketOpportunity'),
+
+            )
+
+                  # Return success response
+            return JsonResponse({"status": "success", "message": "Idea submitted successfully!"}, status=201)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+    return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)

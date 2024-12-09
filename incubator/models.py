@@ -56,21 +56,40 @@ class Profile(models.Model):
     def __str__(self):
         return f"{self.username}"
     
+
+
 class idea(models.Model):
-    title=models.CharField(max_length=150)
-    description=models.TextField()
-    category = models.CharField(max_length=100, choices=[('Tech', 'Tech'), ('Finance', 'Finance'), ('Health', 'Health'),('Entertainment','Entertainment'),('Food','Food')])
+    CATEGORY_CHOICES = [
+        ('Tech', 'Tech'),
+        ('Finance', 'Finance'),
+        ('Health', 'Health'),
+        ('Entertainment', 'Entertainment'),
+        ('Food', 'Food'),
+    ]
+    VISIBILITY_CHOICES = [
+        ('Public', 'Public'),
+        ('Private', 'Private'),
+    ]
+
+    title = models.CharField(max_length=150)
+    description = models.TextField()
+    category = models.CharField(
+        max_length=100,
+        choices=CATEGORY_CHOICES,
+        default='Tech'
+    )
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ideas')
     visibility = models.CharField(
         max_length=50,
-        choices=[('Public', 'Public'), ('Private', 'Private')],
+        choices=VISIBILITY_CHOICES,
         default='Public'
     )
+    target_audience = models.TextField(blank=True, null=True)  # Allows null/empty values
+    market_opportunity = models.TextField(blank=True, null=True)  # Allows null/empty values
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
-    
 
     
 
