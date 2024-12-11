@@ -3,43 +3,43 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white py-3 rounded-top">
-                    <h3 class="text-center mb-0">Create Your Account</h3>
-                </div>
-                <div class="card-body p-4">
-                    {% if form.errors %}
-                    <div class="alert alert-danger" role="alert">
-                        <h5 class="alert-heading">Please fix the following errors:</h5>
-                        <ul class="mb-0">
-                            {% for field in form %}
-                            {% if field.errors %}
-                            <li><strong>{{ field.label }}:</strong> {{ field.errors|striptags }}</li>
-                            {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                    
-                    <form method="post" novalidate>
-                        {% csrf_token %}
-                        {{ form|crispy }}
-                        <button type="submit" class="btn btn-primary w-100 fw-bold" style="font-size: 1.2rem; margin-top: 10px;">
-                            Register
-                        </button>
-                    </form>
-                    
-                    <hr class="my-4">
-                    <div class="text-center">
-                        <p class="mb-0">Already have an account? 
-                            <a href="{% url 'login' %}" class="text-decoration-none text-primary fw-bold">Log in</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	<div class="row justify-content-center">
+		<div class="col-md-6 col-lg-5">
+			<div class="card shadow-sm">
+				<div class="card-header bg-primary text-white py-3 rounded-top">
+					<h3 class="text-center mb-0">Create Your Account</h3>
+				</div>
+				<div class="card-body p-4">
+					{% if form.errors %}
+					<div class="alert alert-danger" role="alert">
+						<h5 class="alert-heading">Please fix the following errors:</h5>
+						<ul class="mb-0">
+							{% for field in form %}
+							{% if field.errors %}
+							<li><strong>{{ field.label }}:</strong> {{ field.errors|striptags }}</li>
+							{% endif %}
+							{% endfor %}
+						</ul>
+					</div>
+					{% endif %}
+					
+					<form method="post" novalidate>
+						{% csrf_token %}
+						{{ form|crispy }}
+						<button type="submit" class="btn btn-primary w-100 fw-bold" style="font-size: 1.2rem; margin-top: 10px;">
+							Register
+						</button>
+					</form>
+					
+					<hr class="my-4">
+					<div class="text-center">
+						<p class="mb-0">Already have an account? 
+							<a href="{% url 'login' %}" class="text-decoration-none text-primary fw-bold">Log in</a>
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}

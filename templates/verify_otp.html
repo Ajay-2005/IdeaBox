@@ -2,46 +2,46 @@
 {% block title %}OTP Verification{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm border-0">
-                <div class="card-header text-center bg-primary text-white">
-                    <h4 class="mb-0">OTP Verification</h4>
-                </div>
-                <div class="card-body p-4">
-                    <p class="text-muted text-center mb-4">
-                        Enter the OTP sent to your registered email to verify your account.
-                    </p>
+	<div class="row justify-content-center">
+		<div class="col-md-6">
+			<div class="card shadow-sm border-0">
+				<div class="card-header text-center bg-primary text-white">
+					<h4 class="mb-0">OTP Verification</h4>
+				</div>
+				<div class="card-body p-4">
+					<p class="text-muted text-center mb-4">
+						Enter the OTP sent to your registered email to verify your account.
+					</p>
 
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+					{% if messages %}
+						{% for message in messages %}
+							<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+								{{ message }}
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+						{% endfor %}
+					{% endif %}
 
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="otp" class="form-label fw-semibold">Enter OTP</label>
-                            <input type="text" name="otp" id="otp" 
-                                   class="form-control rounded-pill shadow-sm" 
-                                   placeholder="Enter 6-digit OTP" 
-                                   maxlength="6" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100 rounded-pill shadow-sm">Verify OTP</button>
-                    </form>
-                </div>
-            </div>
-            <div class="text-center mt-3">
-                <p class="text-muted">
-                    Didn't receive the OTP? 
-                    <a href="{% url 'resend_otp' %}" class="text-primary text-decoration-none">Resend OTP</a>
-                </p>
-            </div>
-        </div>
-    </div>
+					<form method="post">
+						{% csrf_token %}
+						<div class="mb-4">
+							<label for="otp" class="form-label fw-semibold">Enter OTP</label>
+							<input type="text" name="otp" id="otp" 
+								   class="form-control rounded-pill shadow-sm" 
+								   placeholder="Enter 6-digit OTP" 
+								   maxlength="6" required>
+						</div>
+						<button type="submit" class="btn btn-primary w-100 rounded-pill shadow-sm">Verify OTP</button>
+					</form>
+				</div>
+			</div>
+			<div class="text-center mt-3">
+				<p class="text-muted">
+					Didn't receive the OTP? 
+					<a href="{% url 'resend_otp' %}" class="text-primary text-decoration-none">Resend OTP</a>
+				</p>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}

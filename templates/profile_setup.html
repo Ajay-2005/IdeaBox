@@ -2,117 +2,117 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h2 class="mb-4 text-center">Update Profile</h2>
-  <form method="post" enctype="multipart/form-data" class="shadow p-4 rounded bg-light">
-    {% csrf_token %}
-    <div class="form-group mb-3">
-      <label for="profile_picture" class="form-label">Profile Picture</label>
-      <input type="file" id="profile_picture" name="profile_picture" class="form-control">
-    </div>
+	<h2 class="mb-4 text-center">Update Profile</h2>
+	<form method="post" enctype="multipart/form-data" class="shadow p-4 rounded bg-light">
+		{% csrf_token %}
+		<div class="form-group mb-3">
+			<label for="profile_picture" class="form-label">Profile Picture</label>
+			<input type="file" id="profile_picture" name="profile_picture" class="form-control">
+		</div>
 
 
-    <div class="form-group mb-3">
-      <label for="bio" class="form-label">Bio</label>
-      <textarea id="bio" name="bio" class="form-control" placeholder="Bio" rows="5">{{ profile.bio }}</textarea>
-    </div>
+		<div class="form-group mb-3">
+			<label for="bio" class="form-label">Bio</label>
+			<textarea id="bio" name="bio" class="form-control" placeholder="Bio" rows="5">{{ profile.bio }}</textarea>
+		</div>
 
-    <div class="form-group mb-3">
-      <label for="education" class="form-label">Education</label>
-      <textarea id="education" name="education" class="form-control"
-        placeholder="Education">{{ profile.education }}</textarea>
-    </div>
+		<div class="form-group mb-3">
+			<label for="education" class="form-label">Education</label>
+			<textarea id="education" name="education" class="form-control"
+				placeholder="Education">{{ profile.education }}</textarea>
+		</div>
 
-    <div class="form-group mb-3">
-      <label for="experience" class="form-label">Experience</label>
-      <textarea id="experience" name="experience" class="form-control" placeholder="Experience"
-        rows="5">{{ profile.experience }}</textarea>
-    </div>
+		<div class="form-group mb-3">
+			<label for="experience" class="form-label">Experience</label>
+			<textarea id="experience" name="experience" class="form-control" placeholder="Experience"
+				rows="5">{{ profile.experience }}</textarea>
+		</div>
 
-    <div class="form-group mb-3">
-      <label for="phone_number" class="form-label">Phone Number</label>
-      <input type="text" id="phone_number" name="phone_number" class="form-control" placeholder="Phone Number"
-        value="{{ profile.phone_number }}">
-    </div>
+		<div class="form-group mb-3">
+			<label for="phone_number" class="form-label">Phone Number</label>
+			<input type="text" id="phone_number" name="phone_number" class="form-control" placeholder="Phone Number"
+				value="{{ profile.phone_number }}">
+		</div>
 
-    <div class="form-group mb-3">
-      <label for="location" class="form-label">Location</label>
-      <input type="text" id="location" name="location" class="form-control" placeholder="Location"
-        value="{{ profile.location }}">
-    </div>
+		<div class="form-group mb-3">
+			<label for="location" class="form-label">Location</label>
+			<input type="text" id="location" name="location" class="form-control" placeholder="Location"
+				value="{{ profile.location }}">
+		</div>
 
-    <div class="form-group mb-3">
-      <label for="linkedin" class="form-label">LinkedIn</label>
-      <input type="url" id="linkedin" name="linkedin" class="form-control" placeholder="LinkedIn URL"
-        value="{{ profile.linkedin }}">
-    </div>
+		<div class="form-group mb-3">
+			<label for="linkedin" class="form-label">LinkedIn</label>
+			<input type="url" id="linkedin" name="linkedin" class="form-control" placeholder="LinkedIn URL"
+				value="{{ profile.linkedin }}">
+		</div>
 
-    <div class="form-group mb-3">
-      <label for="twitter" class="form-label">Twitter</label>
-      <input type="url" id="twitter" name="twitter" class="form-control" placeholder="Twitter URL"
-        value="{{ profile.twitter }}">
-    </div>
+		<div class="form-group mb-3">
+			<label for="twitter" class="form-label">Twitter</label>
+			<input type="url" id="twitter" name="twitter" class="form-control" placeholder="Twitter URL"
+				value="{{ profile.twitter }}">
+		</div>
 
-    <div class="form-group mb-3">
-      <label for="github" class="form-label">GitHub</label>
-      <input type="url" id="github" name="github" class="form-control" placeholder="GitHub URL"
-        value="{{ profile.github }}">
-    </div>
+		<div class="form-group mb-3">
+			<label for="github" class="form-label">GitHub</label>
+			<input type="url" id="github" name="github" class="form-control" placeholder="GitHub URL"
+				value="{{ profile.github }}">
+		</div>
 
-    <div class="form-group mb-3">
-      <label for="status" class="form-label">Status</label>
-      <select id="status" name="status" class="form-select">
-        <option value="Available" >Available
-        </option>
-        <option value="Not Available">Not
-          Available</option>
-      </select>
+		<div class="form-group mb-3">
+			<label for="status" class="form-label">Status</label>
+			<select id="status" name="status" class="form-select">
+				<option value="Available" >Available
+				</option>
+				<option value="Not Available">Not
+					Available</option>
+			</select>
 
-    </div>
+		</div>
 
 
-    <div class="form-group mb-3">
-      <label class="form-label">Skills</label><br>
-      <input type="text" id="search-skills" class="form-control mb-3" placeholder="Search skills...">
-      <div class="row" id="skills-container">
-        <!-- Skills will be dynamically loaded here -->
-      </div>
-    </div>
+		<div class="form-group mb-3">
+			<label class="form-label">Skills</label><br>
+			<input type="text" id="search-skills" class="form-control mb-3" placeholder="Search skills...">
+			<div class="row" id="skills-container">
+				<!-- Skills will be dynamically loaded here -->
+			</div>
+		</div>
 
-    <button type="submit" class="btn btn-primary w-100 mt-3">Save Profile</button>
-  </form>
+		<button type="submit" class="btn btn-primary w-100 mt-3">Save Profile</button>
+	</form>
 </div>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("search-skills");
-    const skillsContainer = document.getElementById("skills-container");
+	document.addEventListener("DOMContentLoaded", function () {
+		const searchInput = document.getElementById("search-skills");
+		const skillsContainer = document.getElementById("skills-container");
 
-    searchInput.addEventListener("input", function () {
-      const query = searchInput.value;
-      fetch(`/skills-autocomplete?term=${encodeURIComponent(query)}`)
-        .then((response) => response.json())
-        .then((data) => {
+		searchInput.addEventListener("input", function () {
+			const query = searchInput.value;
+			fetch(`/skills-autocomplete?term=${encodeURIComponent(query)}`)
+				.then((response) => response.json())
+				.then((data) => {
 
-          skillsContainer.innerHTML = "";
-          data.results.forEach((skill) => {
-            const skillElement = `
-              <div class="col-md-6 col-lg-4 mb-2">
-                <div class="form-check">
-                  <input 
-                    type="checkbox" 
-                    id="skill_${skill.id}" 
-                    name="skills" 
-                    value="${skill.id}" 
-                    class="form-check-input">
-                  <label for="skill_${skill.id}" class="form-check-label">${skill.text}</label>
-                </div>
-              </div>`;
-            skillsContainer.insertAdjacentHTML("beforeend", skillElement);
-          });
-        })
-        .catch((err) => {
-          console.error("Error fetching skills:", err);
-        });
-    });
-  });
+					skillsContainer.innerHTML = "";
+					data.results.forEach((skill) => {
+						const skillElement = `
+							<div class="col-md-6 col-lg-4 mb-2">
+								<div class="form-check">
+									<input 
+										type="checkbox" 
+										id="skill_${skill.id}" 
+										name="skills" 
+										value="${skill.id}" 
+										class="form-check-input">
+									<label for="skill_${skill.id}" class="form-check-label">${skill.text}</label>
+								</div>
+							</div>`;
+						skillsContainer.insertAdjacentHTML("beforeend", skillElement);
+					});
+				})
+				.catch((err) => {
+					console.error("Error fetching skills:", err);
+				});
+		});
+	});
 </script>
 {% endblock %}
