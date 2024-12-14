@@ -91,12 +91,11 @@
 					marketOpportunity: opportunityEditor.root.innerHTML // Get Quill content as HTML
 				};
 
-				// Perform an AJAX request using fetch
 				fetch('/submit-idea/', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'X-CSRFToken': getCSRFToken(), // Include CSRF token
+						'X-CSRFToken': getCSRFToken(), 
 					},
 					body: JSON.stringify(data)
 				})
