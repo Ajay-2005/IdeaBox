@@ -24,9 +24,7 @@
 	padding-left: 50px;
 }
 
-.custom-navbar {
-	background-color: #007BFF;
-}
+
 
 body,
 html {
@@ -119,8 +117,9 @@ html {
 	padding: 50px 0;
 	position: relative;
 	background-color: #f8f2f2;
-	
+
 }
+
 .how-it-works-section h2 {
 	font-size: 2.5rem;
 	padding-bottom: 50px;
@@ -128,10 +127,11 @@ html {
 	color: #333;
 	font-family: 'Patrick Hand', 'Sans serif';
 }
+
 .map-container {
 	display: flex;
 	flex-wrap: nowrap;
-	justify-content:space-between;
+	justify-content: space-between;
 	align-items: center;
 	gap: 50px;
 	position: relative;
@@ -139,11 +139,13 @@ html {
 	margin: 0 100px;
 	padding-left: 50px;
 }
+
 .step {
 	width: 150px;
 	text-align: center;
 	position: relative;
 }
+
 .connector-arrow {
 	width: 175px;
 	height: 2px;
@@ -153,6 +155,7 @@ html {
 	right: -175px;
 
 }
+
 .step-1 .connector-arrow {
 	right: -175px;
 }
@@ -164,7 +167,8 @@ html {
 .step-3 .connector-arrow {
 	right: -175px;
 }
-.step-4 .connector-arrow{
+
+.step-4 .connector-arrow {
 	display: none
 }
 
@@ -176,25 +180,29 @@ html {
 	border-radius: 50%;
 	margin-bottom: 15px;
 }
-.contact-section{
+
+.contact-section {
 	background-color: #f8f2f2;
-	padding:60px 0;
+	padding: 60px 0;
 }
-.contact-section h2{
+
+.contact-section h2 {
 	font-size: 2.5rem;
 	font-weight: 700;
 	color: #333;
 	font-family: 'Patrick Hand', 'Sans serif';
 }
-.form-control{
+
+.form-control {
 	border-radius: 0.05rem;
-	text-decoration:none;
+	text-decoration: none;
 }
 
-.contact-section .btn-primary{
+.contact-section .btn-primary {
 	width: 100%;
 }
-.contact-section .btn-primary:hover{
+
+.contact-section .btn-primary:hover {
 	background-color: #007bff;
 }
 
@@ -212,21 +220,20 @@ html {
 	.hero-buttons .btn {
 		font-size: 0.9rem;
 	}
+
 	.map-container {
 		flex-direction: column;
 		align-items: center;
-		gap: 30px; 
+		gap: 30px;
 		padding: 0;
 	}
 
 	.connector-arrow {
-	   display: none;
+		display: none;
 	}
 
 	.step {
 		width: auto;
 	}
-	  
-}  
 
-  
+}

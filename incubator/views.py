@@ -14,7 +14,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django_select2.views import AutoResponseView
 User=get_user_model()
-from .models import Profile,Skill,idea
+from django.db.models import Q
+from .models import Profile,Skill,idea,Post,Comment,Vote,Reply,Tag
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
 def home(request):
 	if request.method == "POST":
 		name = request.POST.get('name', '').strip()
@@ -191,11 +195,15 @@ def reset_password(request):
 	
 	return render(request,'reset_password.html')
 
+phone_number_validator = RegexValidator(
+	regex=r'^[6-9]\d{9}$',  # Accepts 10-digit numbers starting with 6, 7, 8, or 9
+	message="Enter a valid 10-digit phone number."
+)
 
 @login_required
 def profile_setup(request):
 	profile, created = Profile.objects.get_or_create(username=request.user)
-	if request.method=='POST':
+	if request.method == 'POST':
 		profile_picture = request.FILES.get('profile_picture', profile.profile_picture)
 		bio = request.POST.get('bio', '')
 		education = request.POST.get('education', '')
@@ -206,8 +214,19 @@ def profile_setup(request):
 		twitter = request.POST.get('twitter', '')
 		github = request.POST.get('github', '')
 		status = request.POST.get('status', 'Available')
-		selected_skills = request.POST.getlist('skills') 
+		selected_skills = request.POST.getlist('skills')
 
+		# Validate the phone number
+		try:
+			if phone_number:  # Only validate if the user entered a phone number
+				phone_number_validator(phone_number)
+		except ValidationError as e:
+			return render(request, 'profile_setup.html', {
+				'profile': profile,
+				'error': e.message,  # Pass the error message to the template
+			})
+
+		# Update the profile fields
 		profile.profile_picture = profile_picture
 		profile.bio = bio
 		profile.education = education
@@ -218,18 +237,21 @@ def profile_setup(request):
 		profile.twitter = twitter
 		profile.github = github
 		profile.status = status
-		
+
+		# Update skills
+		profile.skills.clear()  # Clear previous skills
 		for skill_id in selected_skills:
 			try:
-				skill=Skill.objects.get(id=skill_id)
+				skill = Skill.objects.get(id=skill_id)
 				profile.skills.add(skill)
 			except Skill.DoesNotExist:
 				continue
-			
-		profile.save()
 
+		profile.save()
 		return redirect('dashboard')
-	return render(request, 'profile_setup.html',{'profile':profile})
+	
+	return render(request, 'profile_setup.html', {'profile': profile})
+
 @login_required
 def profile(request):
 	profile=Profile.objects.get(username=request.user)
@@ -254,7 +276,6 @@ def submit_idea(request):
 	if request.method=='POST':
 		try:
 			data=json.loads(request.body)
-			print(data)
 			idea.objects.create(
 				title=data.get('title'),
 				description=data.get('description'),
@@ -270,3 +291,40 @@ def submit_idea(request):
 			print(e)
 			return JsonResponse({"status": "error", "message": str(e)}, status=400)
 	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
+
+@login_required
+def mentordashboard(request):
+	return render(request,'mentors_dashboard.html')
+@login_required
+
+def discussion_forum(request):
+    tags = Tag.objects.all()
+    posts_list = Post.objects.all()
+
+
+    return render(request, 'forum.html', {'tags': tags, 'posts': posts_list})
+
+@login_required
+
+def submit_question(request):
+	if request.method == 'POST':
+		try:
+			data = json.loads(request.body)
+			title = data.get('title')
+			description = data.get('description')
+			tags = data.get('tags')
+			created_by=request.user
+
+			if not title or not description or not tags:
+				return JsonResponse({"status": "error", "message": "All fields are required."}, status=400)
+
+			post = Post.objects.create(title=title, description=description,created_by=created_by)
+			post.tags.add(*tags)  
+			return JsonResponse({"status": "success", "message": "Question submitted successfully."}, status=200)
+		except Exception as e:
+			print(e)
+			return JsonResponse({"status": "error", "message": str(e)}, status=400)
+	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
+
+
+

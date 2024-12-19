@@ -4,6 +4,7 @@ from django.utils.timezone import now,timedelta
 from django.conf import settings
 import hashlib
 import random
+from django.core.validators import RegexValidator
 
 
 class User(AbstractUser):
@@ -31,7 +32,6 @@ class User(AbstractUser):
 		return False
 
 
-
 class Skill(models.Model):
 	name = models.CharField(max_length=100)
 
@@ -40,7 +40,17 @@ class Skill(models.Model):
 
 class Profile(models.Model):
 	username = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-	phone_number = models.CharField(max_length=15, blank=True, null=True)
+	phone_number = models.CharField(
+		max_length=15,
+		blank=True,
+		null=True,
+		validators=[
+			RegexValidator(
+				regex=r'^[6-9]\d{9}$',  # Only accepts 10-digit numbers starting with 6, 7, 8, or 9
+				message="Enter a valid 10-digit phone number starting with 6, 7, 8, or 9."
+			)
+		]
+	)
 	location = models.CharField(max_length=255, blank=True, null=True)
 	linkedin = models.URLField(blank=True, null=True) 
 	twitter = models.URLField(blank=True, null=True) 
@@ -102,6 +112,55 @@ class Feedback(models.Model):
 	def __str__(self):
 		return f" Feedback on {self.idea.title} by {self.mentor.username}"
 	
+class Tag(models.Model):
+	name = models.CharField(max_length=50, unique=True)
 
+	def __str__(self):
+		return self.name
+
+class Post(models.Model):
+	title = models.CharField(max_length=255)
+	description = models.TextField()
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+	created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+	tags = models.ManyToManyField(Tag, related_name="questions")
+
+	def __str__(self):
+		return self.title
+
+class Comment(models.Model):
+    question = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="answers",default=1)
+    content = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_comments",default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="created_comments",default=1)
+    upvotes = models.IntegerField(default=0)
+    downvotes = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Answer by {self.created_by.username}"
+
+
+class Reply(models.Model):
+    comment = models.ForeignKey(Comment, related_name='replies', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Reply by {self.user.username} on Comment {self.comment.id}"
+class Vote(models.Model):
+	UPVOTE = 1
+	DOWNVOTE = -1
+	VOTE_CHOICES = [(UPVOTE, "Upvote"), (DOWNVOTE, "Downvote")]
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	question = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
+	answer = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
+	value = models.IntegerField(choices=VOTE_CHOICES)
+
+	class Meta:
+		unique_together = ('user', 'question', 'answer')  
 
 

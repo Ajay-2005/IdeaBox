@@ -17,8 +17,12 @@ urlpatterns = [
 	path('profile/',views.profile,name='profile'),
 	path('dashboard/',views.dashboard,name='dashboard'),
 	path('dashboard/submit-idea/',views.submit_idea,name='submit-idea'),
-	
-	
+    path('mentors-dashboard/',views.mentordashboard,name='mentor-dashboard'),
+    path('forum/',views.discussion_forum,name='discussion-forum'),
+    path('forum/ask-question',views.submit_question,name='ask-question')
+    
+    
+    
 ]
 	
 

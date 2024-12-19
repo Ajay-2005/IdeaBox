@@ -3,6 +3,7 @@
 {% block content %}
 <div class="container mt-5">
 	<h2 class="mb-4 text-center">Update Profile</h2>
+	
 	<form method="post" enctype="multipart/form-data" class="shadow p-4 rounded bg-light">
 		{% csrf_token %}
 		<div class="form-group mb-3">
@@ -30,9 +31,12 @@
 
 		<div class="form-group mb-3">
 			<label for="phone_number" class="form-label">Phone Number</label>
-			<input type="text" id="phone_number" name="phone_number" class="form-control" placeholder="Phone Number"
-				value="{{ profile.phone_number }}">
+			<input type="text" id="phone_number" name="phone_number" maxlength="10" class="form-control"
+				placeholder="Phone Number" value="{{ profile.phone_number }}">
 		</div>
+		{% if error %}
+		<p class="text-danger"">{{ error }}</p>
+		{% endif %}
 
 		<div class="form-group mb-3">
 			<label for="location" class="form-label">Location</label>
@@ -61,7 +65,7 @@
 		<div class="form-group mb-3">
 			<label for="status" class="form-label">Status</label>
 			<select id="status" name="status" class="form-select">
-				<option value="Available" >Available
+				<option value="Available">Available
 				</option>
 				<option value="Not Available">Not
 					Available</option>

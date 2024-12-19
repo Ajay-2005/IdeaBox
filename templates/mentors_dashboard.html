@@ -1,0 +1,88 @@
+{% extends "partials/bootstrap.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+
+        <!-- Main Content -->
+        <div class="col-md-12">
+            <h2>Welcome, Mentor {{ user.username }}</h2>
+
+            <!-- Your Feedbacks Section -->
+            <section id="your-feedbacks" class="mt-4">
+                <h4>Your Feedbacks</h4>
+                <p class="text-muted">Feedback you’ve provided to entrepreneurs:</p>
+                <ul class="list-group">
+                    {% for feedback in feedbacks %}
+                    <li class="list-group-item">
+                        <strong>Idea: {{ feedback.idea.title }}</strong>
+                        <p>{{ feedback.feedback }}</p>
+                        <p>
+                            <small>Rating: {{ feedback.rating }} | Submitted on {{ feedback.created_at|date:"d M Y"
+                                }}</small>
+                        </p>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">No feedback provided yet.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- Mentoring Requests Section -->
+            <section id="mentoring-requests" class="mt-5">
+                <h4>Mentoring Requests</h4>
+                <p class="text-muted">Requests from entrepreneurs seeking your guidance:</p>
+                <ul class="list-group">
+                    {% for request in mentoring_requests %}
+                    <li class="list-group-item">
+                        <strong>Entrepreneur: {{ request.entrepreneur.username }}</strong>
+                        <p>Idea: {{ request.idea.title }}</p>
+                        <p>Status: {{ request.status }}</p>
+                        <a href="#" class="btn btn-primary btn-sm">Respond</a>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">No new mentoring requests.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- Pending Feedback Requests Section -->
+            <section id="pending-feedback-requests" class="mt-5">
+                <h4>Pending Feedback Requests</h4>
+                <p class="text-muted">Ideas that need your feedback:</p>
+                <ul class="list-group">
+                    {% for idea in feedback_requests %}
+                    <li class="list-group-item">
+                        <strong>Idea: {{ idea.title }}</strong>
+                        <a href="#" class="btn btn-success btn-sm float-end">Provide Feedback</a>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">No pending feedback requests.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <!-- Submitted Ideas Section -->
+            <section id="submitted-ideas" class="mt-5">
+                <h4>Submitted Ideas</h4>
+                <p class="text-muted">Ideas submitted by entrepreneurs:</p>
+                <ul class="list-group">
+                    {% for idea in submitted_ideas %}
+                    <li class="list-group-item">
+                        <strong>Idea Title: {{ idea.title }}</strong>
+                        <p>{{ idea.description }}</p>
+                        <p>
+                            <small>Submitted by {{ idea.entrepreneur.username }} on {{ idea.created_at|date:"d M Y"
+                                }}</small>
+                        </p>
+                        <a href="#" class="btn btn-info btn-sm">View Details</a>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">No ideas submitted yet.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+        </div>
+    </div>
+</div>
+{% endblock %}
