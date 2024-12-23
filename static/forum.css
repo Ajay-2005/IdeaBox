@@ -24,9 +24,8 @@
 
 .btn-primary {
 	background-color: #007BFF;
-	/* Match the navbar color */
 	border-color: #007BFF;
-	/* Match the navbar color */
+	
 }
 
 .btn-primary:hover {
@@ -94,47 +93,40 @@
 	text-decoration: underline;
 }
 
-/* Comment Section */
+/* Ensure comment section takes full width */
+.comment-content {
+    width: 100%; /* Make the comment section take full available width */
+}
+
+/* Adjust comment and post card widths to be more consistent */
+.card {
+    width: 100%; /* Ensure cards take full width available */
+}
+
+/* Style comments and replies properly */
 .comment {
-	display: flex;
-	gap: 1rem;
-	margin-bottom: 1rem;
+    margin-bottom: 20px;
 }
 
 .comment-avatar {
-	border-radius: 50%;
-	width: 50px;
-	height: 50px;
-}
-
-.comment-content {
-	background-color: #f8f9fa;
-	border-radius: 0.5rem;
-	padding: 1rem;
-	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
-	flex: 1;
-}
-
-.comment-header {
-	font-size: 0.9rem;
-	color: #6c757d;
-	margin-bottom: 0.5rem;
-}
-
-.comment-author {
-	font-weight: bold;
-	color: #212529;
+    width: 50px; /* Increase size for better visibility */
+    height: 50px;
 }
 
 .comment-actions {
-	color: #007bff;
-	font-size: 0.85rem;
-	cursor: pointer;
+    display: flex;
+    gap: 10px;
 }
 
-.comment-actions:hover {
-	text-decoration: underline;
+.comment-header {
+    margin-bottom: 10px;
 }
+
+/* Ensure replies are well indented */
+.replies {
+    padding-left: 30px;
+}
+
 
 /* Pagination */
 .pagination {

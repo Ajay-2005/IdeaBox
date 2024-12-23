@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Ask a Question</title>
+	<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+</head>
+
+<body>
+	<div class="modal-body">
+		<form id="askQuestionForm">
+			{% csrf_token %}
+			<!-- Question Title -->
+			<div class="mb-3">
+				<label for="title" class="form-label">Question Title</label>
+				<input type="text" class="form-control" id="title" name="title" placeholder="Enter your question title"
+					required>
+			</div>
+
+			<!-- Question Details -->
+			<div class="mb-3">
+				<label for="content" class="form-label">Question Details</label>
+				<div id="editor" style="height: 200px;"></div>
+				<input type="hidden" name="content" id="quillContent" required>
+				<div id="contentError" class="text-danger" style="display: none;">
+					Please provide details for your question.
+				</div>
+			</div>
+
+			<!-- Tags -->
+			<div class="mb-3">
+				<label for="tags" class="form-label">Select Tags</label>
+				<div id="tags-container" class="row">
+					{% for tag in tags %}
+					<div class="col-md-4 col-sm-6 mb-2">
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" value="{{ tag.id }}" id="tag{{ tag.id }}"
+								name="tags">
+							<label class="form-check-label" for="tag{{ tag.id }}">
+								{{ tag.name }}
+							</label>
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+			</div>
+
+			<!-- Modal Footer -->
+			<div class="modal-footer">
+				<button id="submitButton" class="btn btn-primary" type="button">Submit Question</button>
+			</div>
+		</form>
+	</div>
+
+	<!-- Scripts -->
+	<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+	<script>
+		// Initialize Quill Editor
+		var quill = new Quill('#editor', {
+			theme: 'snow',
+			placeholder: 'Provide more details about your question...',
+		});
+
+		document.getElementById('submitButton').addEventListener('click', function () {
+			// Gather the data
+			const title = document.getElementById('title').value;
+			const description = quill.root.innerHTML; // Get editor content
+			const selectedTags = Array.from(document.querySelectorAll('input[name="tags"]:checked')).map(el => el.value);
+
+			if (!title || description.trim() === '<p><br></p>' || selectedTags.length === 0) {
+				alert('Please fill all fields and select at least one tag.');
+				return;
+			}
+
+			// Send the data via AJAX
+			$.ajax({
+				url: "{% url 'ask-question' %}",
+				method: "POST",
+				headers: { "X-CSRFToken": "{{ csrf_token }}" },
+				contentType: "application/json",
+				data: JSON.stringify({
+					title: title,
+					description: description,
+					tags: selectedTags
+				}),
+				success: function (response) {
+					alert(response.message);
+					location.reload(); // Reload or redirect
+				},
+				error: function (xhr) {
+					alert(xhr.responseJSON.message || "An error occurred. Please try again.");
+				}
+			});
+		});
+	</script>
+</body>
+
+</html>

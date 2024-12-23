@@ -1,53 +1,75 @@
+document.addEventListener('DOMContentLoaded', function () {
 
-var quill1 = new Quill('#editor1', {
-    theme: 'snow',
-    placeholder: 'Write a comment...',
-    modules: {
-        toolbar: [
-            [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'align': [] }],
-            ['bold', 'italic', 'underline'],
-            ['link'],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            ['blockquote', 'code-block'],
-            ['clean']
-        ]
-    }
-});
-var quill1 = new Quill('#editor2', {
-    theme: 'snow',
-    placeholder: 'Write a comment...',
-    modules: {
-        toolbar: [
-            [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            [{ 'align': [] }],
-            ['bold', 'italic', 'underline'],
-            ['link'],
-            [{ 'indent': '-1' }, { 'indent': '+1' }],
-            ['blockquote', 'code-block'],
-            ['clean']
-        ]
-    }
+	new Quill('#editor', {
+		theme: 'snow',
+		placeholder: 'Write your comment here...',
+	});
+
+	function initializeQuillEditor(editorId) {
+		const editorContainer = document.querySelector(`#${editorId}`);
+		if (editorContainer && !editorContainer.dataset.quillInitialized) {
+			new Quill(editorContainer, {
+				theme: 'snow',
+				placeholder: 'Write your reply here...',
+			});
+			editorContainer.dataset.quillInitialized = true;
+		}
+	}
+
+	document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(button => {
+		button.addEventListener('click', () => {
+			const collapseId = button.getAttribute('href').replace('#', '');
+			const editorId = `reply-editor-${collapseId.replace('reply', '')}`;
+			initializeQuillEditor(editorId);
+		});
+	});
 });
 
-let replyform = document.getElementById('reply-comment');
 
-document.getElementById('reply-btn').addEventListener('click', function () {
-    replyform.style.display = 'block';
-})
+function postComment(postId) {
+	const quillEditor = document.getElementById('editor');
+	const quillInstance = new Quill(quillEditor);
+	const content = quillInstance.getText();
+	if (!content) {
+		alert('Please enter a comment before submitting.');
+		return;
+	}
 
-document.getElementById('searchBox').addEventListener('input', function () {
-    let searchQuery = document.getElementById('searchBox').value.toLowerCase();
-    let posts = document.querySelectorAll('.list-group-item');
-    posts.forEach(function (post) {
-        let title = post.querySelector('h5').textContent.toLowerCase();
-        if (title.includes(searchQuery)) {
-            post.style.display = 'block';
-        } else {
-            post.style.display = 'none';
-        }
-    });
-});
+	const payload = {
+		post_id: postId,
+		content: content,
+	};
+
+	const csrfToken = getCSRFToken();
+	fetch('/forum/add-comment/', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			'X-CSRFToken': csrfToken,
+		},
+		body: JSON.stringify(payload),
+	})
+		.then(response => response.json()) // Parse as JSON
+		.then(data => {
+			if (data.success) {
+				alert('Comment added successfully!');
+				location.reload();
+			} else {
+				alert(`Error: ${data.message}`);
+			}
+		})
+		.catch(error => {
+			console.error('Parsing error:', error);
+			alert('Unexpected server response. Please try again.');
+		});
+}
+
+function getCSRFToken() {
+	const cookieValue = document.cookie
+		.split('; ')
+		.find(row => row.startsWith('csrftoken='))
+		?.split('=')[1];
+	return cookieValue;
+}
+
 

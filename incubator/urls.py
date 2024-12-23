@@ -19,7 +19,9 @@ urlpatterns = [
 	path('dashboard/submit-idea/',views.submit_idea,name='submit-idea'),
     path('mentors-dashboard/',views.mentordashboard,name='mentor-dashboard'),
     path('forum/',views.discussion_forum,name='discussion-forum'),
-    path('forum/ask-question',views.submit_question,name='ask-question')
+    path('forum/ask-question',views.submit_question,name='ask-question'),
+    path('forum/post/<int:post_id>/', views.view_post, name='view_post'),
+    path('forum/add-comment/',views.add_comment,name='add-comment')
     
     
     

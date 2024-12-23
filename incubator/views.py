@@ -19,6 +19,7 @@ from .models import Profile,Skill,idea,Post,Comment,Vote,Reply,Tag
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, redirect
 def home(request):
 	if request.method == "POST":
 		name = request.POST.get('name', '').strip()
@@ -298,11 +299,10 @@ def mentordashboard(request):
 @login_required
 
 def discussion_forum(request):
-    tags = Tag.objects.all()
-    posts_list = Post.objects.all()
+	tags = Tag.objects.all()
+	posts_list = Post.objects.all()
 
-
-    return render(request, 'forum.html', {'tags': tags, 'posts': posts_list})
+	return render(request, 'forum/forum.html', {'tags': tags, 'posts': posts_list})
 
 @login_required
 
@@ -327,4 +327,54 @@ def submit_question(request):
 	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
 
 
+def add_comment(request):
+	if request.method == 'POST':
+		data=json.loads(request.body)
+		post_id=data.get('post_id')
+		content=data.get('content')
+		print(post_id)
+		try:
+			post = Post.objects.get(id=post_id)
+			comment = Comment.objects.create(question=post, content=content, user=request.user)
+			return JsonResponse({
+				'success': True,
+				'message': 'Comment added successfully!',
+				'comment_id': comment.id,
+				'comment_content': comment.content,
+				'comment_user': comment.user.username,
+				'comment_created': comment.created_at.strftime('%Y-%m-%d %H:%M:%S')
+			})
+		except Exception as e:
+			return JsonResponse({'success': False, 'message': str(e)})
+	return JsonResponse({'success': False, 'message': 'Invalid request method'})
 
+@login_required
+def Reply_comment(request):
+	if request.method == 'POST':
+		comment_id = request.POST.get('comment_id')
+		content = request.POST.get('content')
+		try:
+			comment = get_object_or_404(Comment, id=comment_id)
+			reply = Reply.objects.create(comment=comment, content=content, user=request.user)
+			return JsonResponse({
+				'success': True,
+				'message': 'Reply added successfully!',
+				'reply_id': reply.id,
+				'reply_content': reply.content,
+				'reply_user': reply.user.username,
+				'reply_created': reply.created_at.strftime('%Y-%m-%d %H:%M:%S')
+			})
+		except Exception as e:
+			return JsonResponse({'success': False, 'message': str(e)})
+	return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+
+def view_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    comments = Comment.objects.filter(question=post)
+    related_posts = Post.objects.exclude(id=post_id).filter(tags__in=post.tags.all())[:5]
+    return render(request, 'forum/view_post.html', {
+        'post': post,
+        'related_posts': related_posts,
+        'comments': comments, 
+    })
