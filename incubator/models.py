@@ -135,8 +135,8 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_comments",default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    upvotes = models.IntegerField(default=0)
-    downvotes = models.IntegerField(default=0)
+    upvotes = models.PositiveIntegerField(default=0)
+    downvotes = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"Answer by {self.created_by.username}"
@@ -150,16 +150,5 @@ class Reply(models.Model):
     def __str__(self):
         return f"Reply by {self.user.username} on Comment {self.comment.id}"
 
-class Vote(models.Model):
-	UPVOTE = 1
-	DOWNVOTE = -1
-	VOTE_CHOICES = [(UPVOTE, "Upvote"), (DOWNVOTE, "Downvote")]
-	user = models.ForeignKey(User, on_delete=models.CASCADE)
-	question = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
-	answer = models.ForeignKey(Comment, on_delete=models.CASCADE, null=True, blank=True)
-	value = models.IntegerField(choices=VOTE_CHOICES)
-
-	class Meta:
-		unique_together = ('user', 'question', 'answer')  
 
 

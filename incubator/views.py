@@ -15,7 +15,7 @@ from django.contrib.auth.hashers import make_password
 from django_select2.views import AutoResponseView
 User=get_user_model()
 from django.db.models import Q
-from .models import Profile,Skill,idea,Post,Comment,Vote,Reply,Tag
+from .models import Profile,Skill,idea,Post,Comment,Reply,Tag
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -197,7 +197,7 @@ def reset_password(request):
 	return render(request,'reset_password.html')
 
 phone_number_validator = RegexValidator(
-	regex=r'^[6-9]\d{9}$',  # Accepts 10-digit numbers starting with 6, 7, 8, or 9
+	regex=r'^[6-9]\d{9}$',  
 	message="Enter a valid 10-digit phone number."
 )
 
@@ -217,14 +217,13 @@ def profile_setup(request):
 		status = request.POST.get('status', 'Available')
 		selected_skills = request.POST.getlist('skills')
 
-		# Validate the phone number
 		try:
-			if phone_number:  # Only validate if the user entered a phone number
+			if phone_number: 
 				phone_number_validator(phone_number)
 		except ValidationError as e:
 			return render(request, 'profile_setup.html', {
 				'profile': profile,
-				'error': e.message,  # Pass the error message to the template
+				'error': e.message,  
 			})
 
 		# Update the profile fields
@@ -326,7 +325,6 @@ def submit_question(request):
 			return JsonResponse({"status": "error", "message": str(e)}, status=400)
 	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
 
-
 def add_comment(request):
 	if request.method == 'POST':
 		data=json.loads(request.body)
@@ -351,8 +349,10 @@ def add_comment(request):
 @login_required
 def Reply_comment(request):
 	if request.method == 'POST':
-		comment_id = request.POST.get('comment_id')
-		content = request.POST.get('content')
+		data=json.loads(request.body)
+		comment_id = data.get('comment_id')
+		content = data.get('content')
+		print(comment_id)
 		try:
 			comment = get_object_or_404(Comment, id=comment_id)
 			reply = Reply.objects.create(comment=comment, content=content, user=request.user)
@@ -378,3 +378,50 @@ def view_post(request, post_id):
         'related_posts': related_posts,
         'comments': comments, 
     })
+
+def vote_comment(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        comment_id = data.get('comment_id')
+        vote_type = data.get('vote_type') 
+        user = request.user
+
+        try:
+            comment = Comment.objects.get(id=comment_id)
+            user_vote = request.session.get(f"vote_{comment_id}", None)
+
+            if vote_type == 'upvote':
+                if user_vote == 'upvote':
+                    comment.upvotes -= 1
+                    del request.session[f"vote_{comment_id}"]
+                else:
+                    if user_vote == 'downvote':
+                        comment.downvotes -= 1
+                    comment.upvotes += 1
+                    request.session[f"vote_{comment_id}"] = 'upvote'
+
+            elif vote_type == 'downvote':
+                if user_vote == 'downvote':
+                    comment.downvotes -= 1
+                    del request.session[f"vote_{comment_id}"]
+                else:
+                    
+                    if user_vote == 'upvote':
+                        comment.upvotes -= 1
+                    comment.downvotes += 1
+                    request.session[f"vote_{comment_id}"] = 'downvote'
+
+            comment.save()
+
+            return JsonResponse({
+                'success': True,
+                'upvotes': comment.upvotes,
+                'downvotes': comment.downvotes
+            })
+
+        except Comment.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Comment does not exist.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})

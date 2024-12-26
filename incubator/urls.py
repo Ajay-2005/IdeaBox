@@ -21,7 +21,10 @@ urlpatterns = [
     path('forum/',views.discussion_forum,name='discussion-forum'),
     path('forum/ask-question',views.submit_question,name='ask-question'),
     path('forum/post/<int:post_id>/', views.view_post, name='view_post'),
-    path('forum/add-comment/',views.add_comment,name='add-comment')
+    path('forum/add-comment/',views.add_comment,name='add-comment'),
+    path('forum/vote-comment/',views.vote_comment,name='vote_comment'),
+    path('forum/add-reply/',views.Reply_comment,name='reply_comment'),
+    
     
     
     
