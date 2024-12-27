@@ -131,7 +131,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     question = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="answers",default=1)
-    content = models.TextField()
+    content = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_comments",default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

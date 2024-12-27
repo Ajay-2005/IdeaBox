@@ -24,6 +24,8 @@ urlpatterns = [
     path('forum/add-comment/',views.add_comment,name='add-comment'),
     path('forum/vote-comment/',views.vote_comment,name='vote_comment'),
     path('forum/add-reply/',views.Reply_comment,name='reply_comment'),
+    path('comment/edit/<int:comment_id>/', views.edit_comment, name='edit_comment'),
+    path('comment/delete/<int:comment_id>/', views.delete_comment, name='delete_comment'),
     
     
     

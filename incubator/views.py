@@ -197,7 +197,7 @@ def reset_password(request):
 	return render(request,'reset_password.html')
 
 phone_number_validator = RegexValidator(
-	regex=r'^[6-9]\d{9}$',  
+	regex=r'^[6-9]\d{9}$',  # Accepts 10-digit numbers starting with 6, 7, 8, or 9
 	message="Enter a valid 10-digit phone number."
 )
 
@@ -217,13 +217,14 @@ def profile_setup(request):
 		status = request.POST.get('status', 'Available')
 		selected_skills = request.POST.getlist('skills')
 
+		# Validate the phone number
 		try:
-			if phone_number: 
+			if phone_number:  # Only validate if the user entered a phone number
 				phone_number_validator(phone_number)
 		except ValidationError as e:
 			return render(request, 'profile_setup.html', {
 				'profile': profile,
-				'error': e.message,  
+				'error': e.message,  # Pass the error message to the template
 			})
 
 		# Update the profile fields
@@ -325,6 +326,7 @@ def submit_question(request):
 			return JsonResponse({"status": "error", "message": str(e)}, status=400)
 	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
 
+
 def add_comment(request):
 	if request.method == 'POST':
 		data=json.loads(request.body)
@@ -370,58 +372,77 @@ def Reply_comment(request):
 
 
 def view_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
-    comments = Comment.objects.filter(question=post)
-    related_posts = Post.objects.exclude(id=post_id).filter(tags__in=post.tags.all())[:5]
-    return render(request, 'forum/view_post.html', {
-        'post': post,
-        'related_posts': related_posts,
-        'comments': comments, 
-    })
+	post = get_object_or_404(Post, id=post_id)
+	comments = Comment.objects.filter(question=post)
+	related_posts = Post.objects.exclude(id=post_id).filter(tags__in=post.tags.all())[:5]
+	return render(request, 'forum/view_post.html', {
+		'post': post,
+		'related_posts': related_posts,
+		'comments': comments, 
+	})
 
 def vote_comment(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        comment_id = data.get('comment_id')
-        vote_type = data.get('vote_type') 
-        user = request.user
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		comment_id = data.get('comment_id')
+		vote_type = data.get('vote_type') 
+		user = request.user
 
-        try:
-            comment = Comment.objects.get(id=comment_id)
-            user_vote = request.session.get(f"vote_{comment_id}", None)
+		try:
+			comment = Comment.objects.get(id=comment_id)
+			user_vote = request.session.get(f"vote_{comment_id}", None)
 
-            if vote_type == 'upvote':
-                if user_vote == 'upvote':
-                    comment.upvotes -= 1
-                    del request.session[f"vote_{comment_id}"]
-                else:
-                    if user_vote == 'downvote':
-                        comment.downvotes -= 1
-                    comment.upvotes += 1
-                    request.session[f"vote_{comment_id}"] = 'upvote'
+			if vote_type == 'upvote':
+				if user_vote == 'upvote':
+					comment.upvotes -= 1
+					del request.session[f"vote_{comment_id}"]
+				else:
+					if user_vote == 'downvote':
+						comment.downvotes -= 1
+					comment.upvotes += 1
+					request.session[f"vote_{comment_id}"] = 'upvote'
 
-            elif vote_type == 'downvote':
-                if user_vote == 'downvote':
-                    comment.downvotes -= 1
-                    del request.session[f"vote_{comment_id}"]
-                else:
-                    
-                    if user_vote == 'upvote':
-                        comment.upvotes -= 1
-                    comment.downvotes += 1
-                    request.session[f"vote_{comment_id}"] = 'downvote'
+			elif vote_type == 'downvote':
+				if user_vote == 'downvote':
+					comment.downvotes -= 1
+					del request.session[f"vote_{comment_id}"]
+				else:
+					
+					if user_vote == 'upvote':
+						comment.upvotes -= 1
+					comment.downvotes += 1
+					request.session[f"vote_{comment_id}"] = 'downvote'
 
-            comment.save()
+			comment.save()
 
-            return JsonResponse({
-                'success': True,
-                'upvotes': comment.upvotes,
-                'downvotes': comment.downvotes
-            })
+			return JsonResponse({
+				'success': True,
+				'upvotes': comment.upvotes,
+				'downvotes': comment.downvotes
+			})
 
-        except Comment.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Comment does not exist.'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)})
+		except Comment.DoesNotExist:
+			return JsonResponse({'success': False, 'message': 'Comment does not exist.'})
+		except Exception as e:
+			return JsonResponse({'success': False, 'message': str(e)})
 
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+	return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+def edit_comment(request, comment_id):
+	if request.method == 'POST':
+		data=json.loads(request.body)
+		comment = get_object_or_404(Comment, id=comment_id)
+		if request.user == comment.user: 
+			comment.content = data.get('content')
+			comment.save()
+			return JsonResponse({'success': True, 'content': comment.content})
+		return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+def delete_comment(request, comment_id):
+	if request.method == 'POST':
+		comment = get_object_or_404(Comment, id=comment_id)
+		if request.user == comment.user:  
+			comment.delete()
+			return JsonResponse({'success': True})
+		return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+

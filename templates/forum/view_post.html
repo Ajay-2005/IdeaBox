@@ -53,7 +53,7 @@
 				{% for comment in comments %}
 				<div class="list-group-item">
 					<div class="d-flex align-items-start">
-						<img src="{{comment.user.profile.profile_picture.url|default:'https://via.placeholder.com/150' }}"
+						<img src="{{comment.user.profile.profile_picture.url|default:'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y' }}"
 							alt="User Avatar" class="comment-avatar rounded-circle me-3"
 							style="width: 50px; height: 50px;">
 						<div class="flex-grow-1">
@@ -81,7 +81,28 @@
 									data-bs-target="#reply{{ comment.id }}" aria-expanded="false">
 									<i class="fas fa-reply"></i> Reply
 								</button>
+								{% if comment.user == request.user %}
+								<div class="ms-auto">
+									<button class="btn btn-sm btn-secondary edit-btn" data-bs-toggle="collapse"
+										data-bs-target="#edit{{ comment.id }}" aria-expanded="false"
+										data-comment-id="{{ comment.id }}">
+										<i class="fas fa-edit"></i>
+									</button>
+									<button class="btn btn-sm btn-danger delete-btn" data-comment-id="{{ comment.id }}" onclick="deleteComment('{{ comment.id }}')">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
+								{% endif %}
 							</div>
+
+							<div class="collapse mt-3" id="edit{{ comment.id }}">
+								<div class="card card-body">
+									<div id="editor-{{ comment.id }}" class="quill-editor"></div>
+								</div>
+								<button class="btn btn-primary mt-2 update-btn" data-comment-id="{{ comment.id }}"
+									onclick="updateComment('{{ comment.id }}')">Update</button>
+							</div>
+
 							<div class="collapse mt-3" id="reply{{ comment.id }}">
 								<div class="card card-body">
 									<div id="reply-editor-{{ comment.id }}" class="quill-editor"></div>
@@ -144,4 +165,4 @@
 	</div>
 </body>
 
-</html>
+</html
