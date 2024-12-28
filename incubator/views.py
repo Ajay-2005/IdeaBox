@@ -15,7 +15,7 @@ from django.contrib.auth.hashers import make_password
 from django_select2.views import AutoResponseView
 User=get_user_model()
 from django.db.models import Q
-from .models import Profile,Skill,idea,Post,Comment,Reply,Tag
+from .models import Profile,Skill,Idea,Post,Comment,Reply,Tag
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -62,11 +62,11 @@ def register(request):
 			print(form.errors)
 			print(f"Form is invalid: {form.errors}")
 			messages.error(request, "Registration failed. Please correct the errors below.")
-			return render(request, 'register.html', {'form': form})
+			return render(request, 'auth/register.html', {'form': form})
 	
 	else:
 		form = CustomSignupForm()
-		return render(request, 'register.html', {'form': form})
+		return render(request, 'auth/register.html', {'form': form})
 
 
 def verify_otp(request):
@@ -91,7 +91,7 @@ def verify_otp(request):
 		except User.DoesNotExist:
 			messages.error(request, "User not found.")
 
-	return render(request,'verify_otp.html')
+	return render(request,'auth/verify_otp.html')
 
 def login_view(request):
 	if request.method == 'POST':
@@ -120,9 +120,8 @@ def login_view(request):
 
 				if not form.cleaned_data.get('remember_me'):
 					request.session.set_expiry(0)
-				next_url = request.GET.get('next')
 
-				return redirect(next_url or 'home') 
+				return render('dashboard')
 			else:
 				messages.error(request, "Invalid username or password.")
 		else:
@@ -130,7 +129,7 @@ def login_view(request):
 	else:
 		form = CustomLoginForm()
 
-	return render(request, 'login.html', {'form': form})
+	return render(request, 'auth/login.html', {'form': form})
 
 def resend_otp(request):
 	email = request.session.get("email")
@@ -174,7 +173,7 @@ def forgot_password(request):
 			messages.error(request,"No accound found with this email")
 			return redirect('forgot_password')
 	
-	return render(request,'forgot_password.html')
+	return render(request,'auth/forgot_password.html')
 
 def reset_password(request):
 	email=request.GET['email']
@@ -194,10 +193,10 @@ def reset_password(request):
 		except User.DoesNotExist:
 			messages.error(request,"No accound found with this email")
 	
-	return render(request,'reset_password.html')
+	return render(request,'auth/reset_password.html')
 
 phone_number_validator = RegexValidator(
-	regex=r'^[6-9]\d{9}$',  # Accepts 10-digit numbers starting with 6, 7, 8, or 9
+	regex=r'^[6-9]\d{9}$',  
 	message="Enter a valid 10-digit phone number."
 )
 
@@ -267,7 +266,7 @@ class CustomSkillAutoResponseForm(AutoResponseView):
 		return JsonResponse({'results': results})
 @login_required
 def dashboard(request):
-	ideas = idea.objects.order_by('-created_at')[:5]
+	ideas = Idea.objects.order_by('-created_at')[:5]
 	context = {
 		'ideas': ideas,
 	}
@@ -277,7 +276,7 @@ def submit_idea(request):
 	if request.method=='POST':
 		try:
 			data=json.loads(request.body)
-			idea.objects.create(
+			Idea.objects.create(
 				title=data.get('title'),
 				description=data.get('description'),
 				category=data.get('category'),
@@ -294,6 +293,23 @@ def submit_idea(request):
 	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
 
 @login_required
+def idea_list(request):
+	idea=Idea.objects.all()
+	return JsonResponse({'ideas':idea})
+
+@login_required
+def delete_idea(request, idea_id):
+    if request.method == 'POST':
+        idea = get_object_or_404(Idea, id=idea_id)
+        if request.user == idea.creator:
+            idea.delete()
+            return JsonResponse({'success': True}) 
+        else:
+            return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+
+
+@login_required
 def mentordashboard(request):
 	return render(request,'mentors_dashboard.html')
 @login_required
@@ -305,7 +321,6 @@ def discussion_forum(request):
 	return render(request, 'forum/forum.html', {'tags': tags, 'posts': posts_list})
 
 @login_required
-
 def submit_question(request):
 	if request.method == 'POST':
 		try:
@@ -326,7 +341,7 @@ def submit_question(request):
 			return JsonResponse({"status": "error", "message": str(e)}, status=400)
 	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
 
-
+@login_required
 def add_comment(request):
 	if request.method == 'POST':
 		data=json.loads(request.body)
@@ -347,6 +362,7 @@ def add_comment(request):
 		except Exception as e:
 			return JsonResponse({'success': False, 'message': str(e)})
 	return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
 
 @login_required
 def Reply_comment(request):

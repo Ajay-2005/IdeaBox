@@ -17,6 +17,7 @@ urlpatterns = [
 	path('profile/',views.profile,name='profile'),
 	path('dashboard/',views.dashboard,name='dashboard'),
 	path('dashboard/submit-idea/',views.submit_idea,name='submit-idea'),
+    path('dashboard/delete-idea/<int:idea_id>/',views.delete_idea,name='delete-idea'),
     path('mentors-dashboard/',views.mentordashboard,name='mentor-dashboard'),
     path('forum/',views.discussion_forum,name='discussion-forum'),
     path('forum/ask-question',views.submit_question,name='ask-question'),
@@ -26,9 +27,6 @@ urlpatterns = [
     path('forum/add-reply/',views.Reply_comment,name='reply_comment'),
     path('comment/edit/<int:comment_id>/', views.edit_comment, name='edit_comment'),
     path('comment/delete/<int:comment_id>/', views.delete_comment, name='delete_comment'),
-    
-    
-    
     
 ]
 	

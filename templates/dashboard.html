@@ -31,12 +31,16 @@
 		<!-- Sidebar -->
 		<div class="col-md-3 col-lg-2 p-0 bg-info fixed-top" style="top: 56px; height: calc(100vh - 56px);">
 			<ul class="nav flex-column p-3">
-				
+
 				<li class="nav-item">
 					<a class="nav-link active text-white" data-bs-toggle="modal" data-bs-target="#submitIdeaModal">
 						Submit Idea
 					</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link text-white" href="#ideaManagementSection">Manage Ideas</a>
+				</li>
+
 				<li class="nav-item">
 					<a class="nav-link text-white" href="#">SWOT Analysis</a>
 				</li>
@@ -109,23 +113,43 @@
 			</div>
 
 			<!-- Top 5 Ideas Section -->
-			<div class="row mt-5">
+			<!-- Idea Management Section -->
+			<div class="row mt-5" id="ideaManagementSection">
 				<div class="col-12">
-					<h4>Top Ideas</h4>
-					<ul class="list-group">
-						{% for idea in ideas %}
-						<li class="list-group-item">
-							<h5>{{ idea.title }}</h5>
-							<p class="text-muted">{{ idea.description|truncatechars:100 }}</p>
-							<span class="badge bg-info">{{ idea.category }}</span>
-							<span class="text-muted float-end">{{ idea.created_at|date:"d M Y" }}</span>
-						</li>
-						{% empty %}
-						<li class="list-group-item text-muted">No ideas to display.</li>
-						{% endfor %}
-					</ul>
+					<h4>Manage Your Ideas</h4>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Title</th>
+								<th>Category</th>
+								<th>Created At</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for idea in ideas %}
+							<tr>
+								<td>{{ idea.title }}</td>
+								<td>{{ idea.category }}</td>
+								<td>{{ idea.created_at|date:"d M Y" }}</td>
+								<td>
+									<a href="" class="btn btn-sm btn-primary">Edit</a>
+									<button type="button" class="btn btn-sm btn-danger"
+										onclick="deleteIdea('{{ idea.id }}')">Delete</button>
+								</td>
+								</td>
+							</tr>
+							{% empty %}
+							<tr>
+								<td colspan="4" class="text-center text-muted">No ideas available to manage.</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
 				</div>
 			</div>
+
+
 			<!-- Recent Activities -->
 			<div class="row mt-5">
 				<div class="col-12">

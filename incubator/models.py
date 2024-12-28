@@ -69,7 +69,7 @@ class Profile(models.Model):
 	
 
 
-class idea(models.Model):
+class Idea(models.Model):
 	CATEGORY_CHOICES = [
 		('Tech', 'Tech'),
 		('Finance', 'Finance'),
@@ -103,7 +103,7 @@ class idea(models.Model):
 		return self.title
 
 class Feedback(models.Model):
-	idea=models.ForeignKey(idea,related_name='feedbacks',on_delete=models.CASCADE),
+	idea=models.ForeignKey(Idea,related_name='feedbacks',on_delete=models.CASCADE),
 	mentor=models.ForeignKey(User,related_name='mentor_feedbacks',on_delete=models.CASCADE),
 	content=models.TextField(),
 	created_at=models.DateTimeField(auto_now_add=True),
