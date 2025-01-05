@@ -94,42 +94,56 @@ def verify_otp(request):
 	return render(request,'auth/verify_otp.html')
 
 def login_view(request):
-	if request.method == 'POST':
-		form = CustomLoginForm(request, data=request.POST)
+    if request.method == 'POST':
+        form = CustomLoginForm(request, data=request.POST)
 
-		if not form.is_valid():
-			print("Form errors:", form.errors)
+        if not form.is_valid():
+            print("Form errors:", form.errors)
 
-		if form.is_valid():
-			username_or_email = form.cleaned_data['username']
-			password = form.cleaned_data['password']
+        if form.is_valid():
+            username_or_email = form.cleaned_data['username']
+            password = form.cleaned_data['password']
 
-			if '@' in username_or_email:
-				try:
-					user_obj = User.objects.get(email=username_or_email)
-					username = user_obj.username
-				except User.DoesNotExist:
-					messages.error(request, "Invalid email or password.")
-					return render(request, 'login.html', {'form': form})
-			else:
-				username = username_or_email
+            if '@' in username_or_email:
+                try:
+                    user_obj = User.objects.get(email=username_or_email)
+                    username = user_obj.username
+                except User.DoesNotExist:
+                    messages.error(request, "Invalid email or password.")
+                    return render(request, 'auth/login.html', {'form': form})
+            else:
+                username = username_or_email
 
-			user = authenticate(request, username=username, password=password)
-			if user:
-				login(request, user)
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
 
-				if not form.cleaned_data.get('remember_me'):
-					request.session.set_expiry(0)
+                # Handle "remember me"
+                if not form.cleaned_data.get('remember_me'):
+                    request.session.set_expiry(0)
 
-				return render('dashboard')
-			else:
-				messages.error(request, "Invalid username or password.")
-		else:
-			messages.error(request, "Please correct the errors below.")
-	else:
-		form = CustomLoginForm()
+                # Redirect based on `next` parameter or user role
+                next_url = request.GET.get('next')
+                if next_url:
+                    return redirect(next_url)
+                elif user.role == 'mentor':  # Example: Redirect mentors
+                    return redirect('mentor-dashboard')
+                elif user.role == 'entrepreneur':  # Example: Redirect entrepreneurs
+                    return redirect('dashboard')
+                elif user.role == 'collaborator':  # Example: Redirect collaborators
+                    return redirect('/')
+                else:  # Default redirect for undefined roles
+                    messages.warning(request, "Role not defined. Redirecting to home.")
+                    return redirect('home')
 
-	return render(request, 'auth/login.html', {'form': form})
+            else:
+                messages.error(request, "Invalid username or password.")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = CustomLoginForm()
+
+    return render(request, 'auth/login.html', {'form': form})
 
 def resend_otp(request):
 	email = request.session.get("email")
@@ -216,17 +230,15 @@ def profile_setup(request):
 		status = request.POST.get('status', 'Available')
 		selected_skills = request.POST.getlist('skills')
 
-		# Validate the phone number
 		try:
-			if phone_number:  # Only validate if the user entered a phone number
+			if phone_number:  
 				phone_number_validator(phone_number)
 		except ValidationError as e:
 			return render(request, 'profile_setup.html', {
 				'profile': profile,
-				'error': e.message,  # Pass the error message to the template
+				'error': e.message, 
 			})
 
-		# Update the profile fields
 		profile.profile_picture = profile_picture
 		profile.bio = bio
 		profile.education = education
@@ -292,6 +304,22 @@ def submit_idea(request):
 			return JsonResponse({"status": "error", "message": str(e)}, status=400)
 	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
 
+def edit_idea(request, idea_id):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		idea = get_object_or_404(Idea, id=idea_id)
+		if request.user == idea.creator:
+			idea.title = data.get('title')
+			idea.description = data.get('description')
+			idea.category = data.get('category')
+			idea.visibility = data.get('visibility')
+			idea.target_audience = data.get('targetAudience')
+			idea.market_opportunity = data.get('marketOpportunity')
+			idea.save()
+			return JsonResponse({'success': True, 'message': 'Idea updated successfully!'})
+		return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+	return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
 @login_required
 def idea_list(request):
 	idea=Idea.objects.all()
@@ -308,6 +336,17 @@ def delete_idea(request, idea_id):
             return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
     return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
 
+def get_idea(request, idea_id):
+	idea = get_object_or_404(Idea, id=idea_id)
+	return JsonResponse({
+		'id': idea.id,
+		'title': idea.title,
+		'description': idea.description,
+		'category': idea.category,
+		'visibility': idea.visibility,
+		'target_audience': idea.target_audience,
+		'market_opportunity': idea.market_opportunity
+	})
 
 @login_required
 def mentordashboard(request):
@@ -461,4 +500,3 @@ def delete_comment(request, comment_id):
 			comment.delete()
 			return JsonResponse({'success': True})
 		return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
-

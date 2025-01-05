@@ -18,6 +18,8 @@ urlpatterns = [
 	path('dashboard/',views.dashboard,name='dashboard'),
 	path('dashboard/submit-idea/',views.submit_idea,name='submit-idea'),
     path('dashboard/delete-idea/<int:idea_id>/',views.delete_idea,name='delete-idea'),
+	path('dashboard/edit-idea/<int:idea_id>/',views.edit_idea,name='edit-idea'),
+    path('dashboard/get-idea/<int:idea_id>/',views.get_idea,name='get-idea'),
     path('mentors-dashboard/',views.mentordashboard,name='mentor-dashboard'),
     path('forum/',views.discussion_forum,name='discussion-forum'),
     path('forum/ask-question',views.submit_question,name='ask-question'),
@@ -30,4 +32,3 @@ urlpatterns = [
     
 ]
 	
-

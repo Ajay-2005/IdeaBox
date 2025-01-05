@@ -79,6 +79,19 @@
 					</div>
 				</div>
 			</div>
+			<div class="modal fade" id="EditIdeaModal" tabindex="-1" aria-labelledby="EditIdeaModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="EditIdeaModalLabel">Edit Idea</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+
+						{% include 'edit_idea.html' %}
+					</div>
+				</div>
+			</div>
 			<!-- Overview Cards -->
 			<div class="row mt-4">
 				<div class="col-md-4">
@@ -112,8 +125,6 @@
 				</div>
 			</div>
 
-			<!-- Top 5 Ideas Section -->
-			<!-- Idea Management Section -->
 			<div class="row mt-5" id="ideaManagementSection">
 				<div class="col-12">
 					<h4>Manage Your Ideas</h4>
@@ -133,8 +144,9 @@
 								<td>{{ idea.category }}</td>
 								<td>{{ idea.created_at|date:"d M Y" }}</td>
 								<td>
-									<a href="" class="btn btn-sm btn-primary">Edit</a>
-									<button type="button" class="btn btn-sm btn-danger"
+									<a href="" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+										data-bs-target="#EditIdeaModal" data-idea-id="{{ idea.id }}">Edit</a>
+									<button type=" button" class="btn btn-sm btn-danger"
 										onclick="deleteIdea('{{ idea.id }}')">Delete</button>
 								</td>
 								</td>
@@ -149,8 +161,6 @@
 				</div>
 			</div>
 
-
-			<!-- Recent Activities -->
 			<div class="row mt-5">
 				<div class="col-12">
 					<h4>Recent Activities</h4>

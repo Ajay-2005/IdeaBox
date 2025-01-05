@@ -1,87 +1,126 @@
 {% extends "partials/bootstrap.html" %}
+{% block navbar %}
+<nav class="navbar navbar-expand-lg fixed-top custom-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" href="#">
+            <i class="fas fa-lightbulb custom-icon"></i><span class="title-idea">dea</span><span
+                class="title-box">Box</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'profile' %}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid">
     <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 p-0 bg-info fixed-top" style="top: 56px; height: calc(100vh - 56px);">
+            <ul class="nav flex-column p-3">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#ideaReviewSection">Review Ideas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#feedbackSection">Feedback Given</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'discussion-forum' %}">Discussion Forum</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#recentActivitiesSection">Recent Activities</a>
+                </li>
+            </ul>
+        </div>
 
         <!-- Main Content -->
-        <div class="col-md-12">
-            <h2>Welcome, Mentor {{ user.username }}</h2>
+        <div class="col-md-9 col-lg-10 ms-md-auto mt-4" style="margin-left: 250px; padding: 20px;">
+            <!-- Welcome Section -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h2 class="text-center">Welcome, {{ user.username }}!</h2>
+                    <p class="text-center text-muted">Here’s a quick overview of your activities on IdeaBox.</p>
+                </div>
+            </div>
 
-            <!-- Your Feedbacks Section -->
-            <section id="your-feedbacks" class="mt-4">
-                <h4>Your Feedbacks</h4>
-                <p class="text-muted">Feedback you’ve provided to entrepreneurs:</p>
-                <ul class="list-group">
-                    {% for feedback in feedbacks %}
-                    <li class="list-group-item">
-                        <strong>Idea: {{ feedback.idea.title }}</strong>
-                        <p>{{ feedback.feedback }}</p>
-                        <p>
-                            <small>Rating: {{ feedback.rating }} | Submitted on {{ feedback.created_at|date:"d M Y"
-                                }}</small>
-                        </p>
-                    </li>
-                    {% empty %}
-                    <li class="list-group-item text-muted">No feedback provided yet.</li>
-                    {% endfor %}
-                </ul>
-            </section>
+            <!-- Idea Review Section -->
+            <div class="row mt-5" id="ideaReviewSection">
+                <div class="col-12">
+                    <h4>Ideas Awaiting Your Review</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Submitted By</th>
+                                <th>Category</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for idea in ideas_to_review %}
+                            <tr>
+                                <td>{{ idea.title }}</td>
+                                <td>{{ idea.submitted_by }}</td>
+                                <td>{{ idea.category }}</td>
+                                <td>
+                                    <a href="{% url 'review-idea' idea.id %}" class="btn btn-sm btn-primary">Review</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No ideas awaiting review.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-            <!-- Mentoring Requests Section -->
-            <section id="mentoring-requests" class="mt-5">
-                <h4>Mentoring Requests</h4>
-                <p class="text-muted">Requests from entrepreneurs seeking your guidance:</p>
-                <ul class="list-group">
-                    {% for request in mentoring_requests %}
-                    <li class="list-group-item">
-                        <strong>Entrepreneur: {{ request.entrepreneur.username }}</strong>
-                        <p>Idea: {{ request.idea.title }}</p>
-                        <p>Status: {{ request.status }}</p>
-                        <a href="#" class="btn btn-primary btn-sm">Respond</a>
-                    </li>
-                    {% empty %}
-                    <li class="list-group-item text-muted">No new mentoring requests.</li>
-                    {% endfor %}
-                </ul>
-            </section>
+            <!-- Feedback Section -->
+            <div class="row mt-5" id="feedbackSection">
+                <div class="col-12">
+                    <h4>Feedback Given</h4>
+                    <ul class="list-group">
+                        {% for feedback in feedbacks %}
+                        <li class="list-group-item">
+                            Feedback on "<strong>{{ feedback.idea.title }}</strong>"
+                            <span class="text-muted float-end">{{ feedback.created_at|date:"d M Y, h:i A" }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No feedback given yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
 
-            <!-- Pending Feedback Requests Section -->
-            <section id="pending-feedback-requests" class="mt-5">
-                <h4>Pending Feedback Requests</h4>
-                <p class="text-muted">Ideas that need your feedback:</p>
-                <ul class="list-group">
-                    {% for idea in feedback_requests %}
-                    <li class="list-group-item">
-                        <strong>Idea: {{ idea.title }}</strong>
-                        <a href="#" class="btn btn-success btn-sm float-end">Provide Feedback</a>
-                    </li>
-                    {% empty %}
-                    <li class="list-group-item text-muted">No pending feedback requests.</li>
-                    {% endfor %}
-                </ul>
-            </section>
-
-            <!-- Submitted Ideas Section -->
-            <section id="submitted-ideas" class="mt-5">
-                <h4>Submitted Ideas</h4>
-                <p class="text-muted">Ideas submitted by entrepreneurs:</p>
-                <ul class="list-group">
-                    {% for idea in submitted_ideas %}
-                    <li class="list-group-item">
-                        <strong>Idea Title: {{ idea.title }}</strong>
-                        <p>{{ idea.description }}</p>
-                        <p>
-                            <small>Submitted by {{ idea.entrepreneur.username }} on {{ idea.created_at|date:"d M Y"
-                                }}</small>
-                        </p>
-                        <a href="#" class="btn btn-info btn-sm">View Details</a>
-                    </li>
-                    {% empty %}
-                    <li class="list-group-item text-muted">No ideas submitted yet.</li>
-                    {% endfor %}
-                </ul>
-            </section>
+            <!-- Recent Activities -->
+            <div class="row mt-5" id="recentActivitiesSection">
+                <div class="col-12">
+                    <h4>Recent Activities</h4>
+                    <ul class="list-group">
+                        {% for activity in recent_activities %}
+                        <li class="list-group-item">
+                            {{ activity.description }}
+                            <span class="text-muted float-end">{{ activity.created_at|date:"d M Y, h:i A" }}</span>
+                        </li>
+                        {% empty %}
+                        <li class="list-group-item text-muted">No recent activities.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>

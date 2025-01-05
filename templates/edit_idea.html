@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Add Quill CSS CDN -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <!-- Add Quill JS CDN -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+</head>
+
+<body>
+    <div class="modal-body">
+        <!-- Title -->
+        <div class="mb-3">
+            <label for="IdeaTitle" class="form-label">Title</label>
+            <input type="text" id="editIdeaTitle" class="form-control" placeholder="Enter the title" required>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <div id="editDescriptionEditor" class="quill-editor"></div>
+        </div>
+
+        <!-- Category -->
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select id="editCategory" class="form-select">
+                <option value="Tech">Tech</option>
+                <option value="Finance">Finance</option>
+                <option value="Health">Health</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Food">Food</option>
+            </select>
+        </div>
+
+        <!-- Visibility -->
+        <div class="mb-3">
+            <label class="form-label">Visibility</label>
+            <div>
+                <input type="radio" id="public" name="visibility" value="Public" checked>
+                <label for="public">Public</label>
+                <input type="radio" id="private" name="visibility" value="Private">
+                <label for="private">Private</label>
+            </div>
+        </div>
+
+        <!-- Target Audience -->
+        <div class="mb-3">
+            <label class="form-label">Target Audience</label>
+            <div id="editAudienceEditor" class="quill-editor"></div>
+        </div>
+
+        <!-- Market Opportunity -->
+        <div class="mb-3">
+            <label class="form-label">Market Opportunity</label>
+            <div id="editOpportunityEditor" class="quill-editor"></div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="editButton" class="btn btn-primary w-100">Edit idea</button>
+    </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let editDescriptionEditor, editAudienceEditor, editOpportunityEditor;
+
+            const editModal = document.querySelector('#EditIdeaModal');
+
+            if (editModal) {
+                $('#EditIdeaModal').on('show.bs.modal', function (event) {
+                    const button = event.relatedTarget; // Button that triggered the modal
+                    const ideaId = button.getAttribute('data-idea-id'); // Extract data-idea-id
+                    editModal.setAttribute('data-idea-id', ideaId);
+
+                    // Initialize Quill editors if not already initialized
+                    if (!editDescriptionEditor) {
+                        editDescriptionEditor = new Quill('#editDescriptionEditor', { theme: 'snow' });
+                    }
+                    if (!editAudienceEditor) {
+                        editAudienceEditor = new Quill('#editAudienceEditor', { theme: 'snow' });
+                    }
+                    if (!editOpportunityEditor) {
+                        editOpportunityEditor = new Quill('#editOpportunityEditor', { theme: 'snow' });
+                    }
+
+                    // Load idea data
+                    loadIdeaData(ideaId);
+                });
+            }
+
+            function loadIdeaData(ideaId) {
+                fetch(`/dashboard/get-idea/${ideaId}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data) {
+                            document.getElementById('editIdeaTitle').value = data.title;
+                            editDescriptionEditor.root.innerHTML = data.description;
+                            document.getElementById('editCategory').value = data.category;
+                            document.querySelector(`input[name="visibility"][value="${data.visibility}"]`).checked = true;
+                            editAudienceEditor.root.innerHTML = data.target_audience;
+                            editOpportunityEditor.root.innerHTML = data.market_opportunity;
+                        } else {
+                            alert('Failed to load idea data');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to load idea data');
+                    });
+            }
+
+            // Save button logic
+
+            document.getElementById('editButton').onclick = () => {
+                console.log("btn clicks")
+                const ideaId = editModal.getAttribute('data-idea-id');
+                const data = {
+                    title: document.getElementById('editIdeaTitle').value,
+                    description: editDescriptionEditor.root.innerHTML,
+                    category: document.getElementById('editCategory').value,
+                    visibility: document.querySelector('input[name="visibility"]:checked').value,
+                    targetAudience: editAudienceEditor.root.innerHTML,
+                    marketOpportunity: editOpportunityEditor.root.innerHTML,
+                };
+
+                fetch(`/dashboard/edit-idea/${ideaId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken(),
+                    },
+                    body: JSON.stringify(data),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Idea updated successfully!');
+                            editModal.querySelector('.btn-close').click();
+                        } else {
+                            alert('Failed to update the idea');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error updating idea');
+                    });
+            };
+
+            function getCSRFToken() {
+                const cookieValue = document.cookie
+                    .split('; ')
+                    .find(row => row.startsWith('csrftoken='))
+                    ?.split('=')[1];
+                return cookieValue || '';
+            }
+        });
+
+    </script>
+
+</body>
+
+</html>

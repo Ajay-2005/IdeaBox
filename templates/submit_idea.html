@@ -90,12 +90,13 @@
 					targetAudience: audienceEditor.root.innerHTML, // Get Quill content as HTML
 					marketOpportunity: opportunityEditor.root.innerHTML // Get Quill content as HTML
 				};
-
-				fetch('/submit-idea/', {
+				const csrf_token=getCSRFToken()
+				console.log(csrf_token)
+				fetch('/dashboard/submit-idea/', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
-						'X-CSRFToken': getCSRFToken(), 
+						'X-CSRFToken': csrf_token,
 					},
 					body: JSON.stringify(data)
 				})
@@ -118,7 +119,7 @@
 					});
 			};
 
-			
+
 			function getCSRFToken() {
 				const cookieValue = document.cookie
 					.split('; ')
