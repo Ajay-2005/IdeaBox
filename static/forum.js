@@ -87,7 +87,7 @@ function updateComment(commentId) {
 	const editorId = `editor-${commentId}`;
 	const quillEditor = Quill.find(document.getElementById(editorId)); // Retrieve the Quill editor instance
 	const updatedContent = quillEditor.root.innerHTML; // Get the updated content
-	console.log(updatedContent);	
+	console.log(updatedContent);
 	// Send an AJAX request to update the comment
 	fetch(`/comment/edit/${commentId}/`, {
 		method: 'POST',

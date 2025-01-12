@@ -84,13 +84,13 @@
 			document.getElementById('submitButton').onclick = () => {
 				const data = {
 					title: document.getElementById('ideaTitle').value,
-					description: descriptionEditor.root.innerHTML, // Get Quill content as HTML
+					description: descriptionEditor.root.innerHTML,
 					category: document.getElementById('category').value,
-					visibility: document.querySelector('input[name="visibility"]:checked').value, // Get selected radio button value
-					targetAudience: audienceEditor.root.innerHTML, // Get Quill content as HTML
-					marketOpportunity: opportunityEditor.root.innerHTML // Get Quill content as HTML
+					visibility: document.querySelector('input[name="visibility"]:checked').value,
+					targetAudience: audienceEditor.root.innerHTML,
+					marketOpportunity: opportunityEditor.root.innerHTML
 				};
-				const csrf_token=getCSRFToken()
+				const csrf_token = getCSRFToken()
 				console.log(csrf_token)
 				fetch('/dashboard/submit-idea/', {
 					method: 'POST',

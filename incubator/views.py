@@ -278,7 +278,7 @@ class CustomSkillAutoResponseForm(AutoResponseView):
 		return JsonResponse({'results': results})
 @login_required
 def dashboard(request):
-	ideas = Idea.objects.order_by('-created_at')[:5]
+	ideas = Idea.objects.filter(creator=request.user)
 	context = {
 		'ideas': ideas,
 	}
