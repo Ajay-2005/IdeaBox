@@ -35,9 +35,9 @@ html {
 
 
 .hero-section {
-	background: linear-gradient(100deg, #007BFF, #4CAF50);
+	background: linear-gradient(180deg,  #007BFF, #f1e7e7);
 	color: #FFFFFF;
-	height: 80vh;
+	height: 73vh;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -237,3 +237,48 @@ html {
 	}
 
 }
+/* Footer styles */
+.footer {
+	background-color: #333;
+	color: #fff;
+	padding: 20px 0;
+	text-align: center;
+	position: relative;
+	bottom: 0;
+	width: 100%;
+  }
+  
+  .footer-content {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
+  }
+  
+  .footer p {
+	margin: 0;
+	font-size: 14px;
+  }
+  
+  .footer-links {
+	list-style: none;
+	padding: 10px 0 0;
+	margin: 0;
+	display: flex;
+	justify-content: center;
+	gap: 15px;
+  }
+  
+  .footer-links li {
+	display: inline;
+  }
+  
+  .footer-links a {
+	color: #00bcd4;
+	text-decoration: none;
+	font-size: 14px;
+  }
+  
+  .footer-links a:hover {
+	text-decoration: underline;
+  }
+  
