@@ -89,7 +89,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'startup_idea_incubator',
         'USER': 'postgres',
-        'PASSWORD': 'new_password',
+        'PASSWORD': 'maddy',
         'HOST': 'localhost',  
         'PORT': '5432',       
     }
