@@ -20,6 +20,7 @@ urlpatterns = [
     path('dashboard/delete-idea/<int:idea_id>/',views.delete_idea,name='delete-idea'),
 	path('dashboard/edit-idea/<int:idea_id>/',views.edit_idea,name='edit-idea'),
     path('dashboard/get-idea/<int:idea_id>/',views.get_idea,name='get-idea'),
+    path('dashboard/idea-details/<int:idea_id>/',views.idea_details,name='idea-details'),
     path('mentors-dashboard/',views.mentordashboard,name='mentor-dashboard'),
     path('forum/',views.discussion_forum,name='discussion-forum'),
     path('forum/ask-question',views.submit_question,name='ask-question'),
@@ -29,6 +30,7 @@ urlpatterns = [
     path('forum/add-reply/',views.Reply_comment,name='reply_comment'),
     path('comment/edit/<int:comment_id>/', views.edit_comment, name='edit_comment'),
     path('comment/delete/<int:comment_id>/', views.delete_comment, name='delete_comment'),
+    
     
 ]
 	

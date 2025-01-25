@@ -1,49 +1,84 @@
 {% extends "partials/bootstrap.html" %}
 {% block content %}
-<div class="container mt-2">
-	<div class="card text-decoration-none">
+<div class="container mt-5">
+	<!-- Profile Header -->
+	<div class="card shadow-sm border-0 mb-4">
 		<div class="card-body">
-			<div class="row">
+			<div class="d-flex align-items-center">
 				<!-- Profile Picture -->
-				<div class="col-md-4 text-center">
-					<img src="{{ profile.profile_picture.url }}" alt="Profile Picture"
-						class="img-thumbnail rounded-circle" style="width: 250px; height: 250px;">
-					<h4 class="mt-3">{{ profile.username.first_name }}</h4>
-					<p class="text-muted">{{ profile.status }}</p>
+				<div>
+					<img src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="rounded-circle border"
+						style="width: 120px; height: 120px; object-fit: cover;">
 				</div>
-
-				<!-- Profile Details -->
-				<div class="col-md-8">
-					<h5>About</h5>
-					<p>{{ profile.bio }}</p>
-
-					<h5>Contact Information</h5>
-					<ul class="list-unstyled">
-						<li><strong>Phone:</strong> {{ profile.phone_number }}</li>
-						<li><strong>Location:</strong> {{ profile.location }}</li>
-					</ul>
-
-					<h5>Professional Links</h5>
-					<ul class="list-unstyled">
-						<li><strong>LinkedIn:</strong> <a href="{{ profile.linkedin }}">{{ profile.linkedin }}</a></li>
-						<li><strong>Twitter:</strong> <a href="{{ profile.twitter }}">{{ profile.twitter }}</a></li>
-						<li><strong>GitHub:</strong> <a href="{{ profile.github }}">{{ profile.github }}</a></li>
-					</ul>
-
-					<h5>Education</h5>
-					<p>{{ profile.education }}</p>
-
-					<h5>Experience</h5>
-					<p>{{ profile.experience }}</p>
-
-					<h5>Skills</h5>
-					<ul class="list-inline">
-						{% for skill in profile.skills.all %}
-						<li class="list-inline-item badge bg-secondary">{{ skill.name }}</li>
-						{% endfor %}
-					</ul>
+				<!-- User Info -->
+				<div class="ms-4">
+					<h3 class="mb-0">{{ profile.username }}</h3>
+					<p class="text-muted mb-1">{{ profile.status }}</p>
+					<p class="text-muted"><i class="fas fa-map-marker-alt"></i> {{ profile.location }}</p>
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<!-- About Section -->
+	<div class="card shadow-sm border-0 mb-4">
+		<div class="card-body">
+			<h5 class="mb-3"><i class="fas fa-user"></i> About Me</h5>
+			<p>{{ profile.bio }}</p>
+		</div>
+	</div>
+
+	<!-- Skills Section -->
+	<div class="card shadow-sm border-0 mb-4">
+		<div class="card-body">
+			<h5 class="mb-3"><i class="fas fa-tools"></i> Skills</h5>
+			<ul class="list-inline">
+				{% for skill in profile.skills.all %}
+				<li class="list-inline-item badge bg-secondary">{{ skill.name }}</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+
+	<!-- Education and Experience -->
+	<div class="row">
+		<!-- Education -->
+		<div class="col-md-6 mb-4">
+			<div class="card shadow-sm border-0">
+				<div class="card-body">
+					<h5 class="mb-3"><i class="fas fa-graduation-cap"></i> Education</h5>
+					<p>{{ profile.education }}</p>
+				</div>
+			</div>
+		</div>
+		<!-- Experience -->
+		<div class="col-md-6 mb-4">
+			<div class="card shadow-sm border-0">
+				<div class="card-body">
+					<h5 class="mb-3"><i class="fas fa-briefcase"></i> Experience</h5>
+					<p>{{ profile.experience }}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Contact and Links -->
+	<div class="card shadow-sm border-0 mb-4">
+		<div class="card-body">
+			<h5 class=" mb-3"><i class="fas fa-phone-alt"></i> Contact Information</h5>
+			<ul class="list-unstyled mb-4">
+				<li><strong>Phone:</strong> {{ profile.phone_number }}</li>
+				<li><strong>Location:</strong> {{ profile.location }}</li>
+			</ul>
+			<h5 class=" mb-3"><i class="fas fa-link"></i> Professional Links</h5>
+			<ul class="list-unstyled">
+				<li><strong>LinkedIn:</strong> <a href="{{ profile.linkedin }}" target="_blank">
+						{{ profile.linkedin}}</a></li>
+				<li><strong>Twitter:</strong> <a href="{{ profile.twitter }}" target="_blank">{{ profile.twitter }}</a>
+				</li>
+				<li><strong>GitHub:</strong> <a href="{{ profile.github }}" target="_blank">{{ profile.github }}</a>
+				</li>
+			</ul>
 		</div>
 	</div>
 </div>

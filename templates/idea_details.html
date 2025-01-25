@@ -1,0 +1,64 @@
+{% extends "partials/bootstrap.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Title Section -->
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1 class="display-3">{{ idea.title }}</h1>
+            <p class="lead text-muted">Category: <span class="badge bg-info">{{ idea.category }}</span></p>
+        </div>
+    </div>
+
+    <!-- Idea Details Section -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3>Overview</h3>
+            <p class="mb-4">{{ idea.description }}</p>
+
+            <h4>Target Audience</h4>
+            <p>{{ idea.target_audience }}</p>
+
+            <h4>Market Opportunity</h4>
+            <p>{{ idea.market_opportunity }}</p>
+
+            <p class="text-muted">Created on: {{ idea.created_at|date:"d M Y" }}</p>
+        </div>
+
+        <!-- Creator Info Section -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h5 class="mb-3">Creator Details</h5>
+            </div>
+            <div class="col-md-4">
+                <strong>Name:</strong> {{ idea.creator.username }}
+            </div>
+            <div class="col-md-4">
+                <strong>Email:</strong> <a href="mailto:{{ idea.creator.email }}">{{ idea.creator.email }}</a>
+            </div>
+            <div class="col-md-4">
+                <strong>Joined on:</strong> {{ idea.creator.date_joined|date:"d M Y" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4>Feedback</h4>
+            <div class="list-group">
+                {% for feedback in idea.feedback_set.all %}
+                <div class="list-group-item">
+                    <strong>{{ feedback.user.username }}</strong>
+                    <p>{{ feedback.content }}</p>
+                    <p class="text-muted">Posted on: {{ feedback.created_at|date:"d M Y, H:i" }}</p>
+                </div>
+                {% empty %}
+                <div class="list-group-item text-muted">No feedback yet. Be the first to give feedback!</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

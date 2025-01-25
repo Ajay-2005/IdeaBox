@@ -348,11 +348,15 @@ def get_idea(request, idea_id):
 		'market_opportunity': idea.market_opportunity
 	})
 
+def idea_details(request,idea_id):
+	idea = get_object_or_404(Idea, id=idea_id)
+	return render(request, 'idea_details.html', {'idea': idea})
+
 @login_required
 def mentordashboard(request):
-	return render(request,'mentors_dashboard.html')
+	ideas=Idea.objects.all()
+	return render(request,'mentors_dashboard.html',{'ideas':ideas})
 @login_required
-
 def discussion_forum(request):
 	tags = Tag.objects.all()
 	posts_list = Post.objects.all()

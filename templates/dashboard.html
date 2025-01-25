@@ -140,7 +140,7 @@
 						<tbody>
 							{% for idea in ideas %}
 							<tr>
-								<td>{{ idea.title }}</td>
+								<td><a href="{% url 'idea-details' idea.id %}" style="text-decoration: none; color: black;">{{ idea.title }}</a></td>
 								<td>{{ idea.category }}</td>
 								<td>{{ idea.created_at|date:"d M Y" }}</td>
 								<td>
