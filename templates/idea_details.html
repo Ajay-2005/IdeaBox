@@ -5,7 +5,7 @@
     <!-- Title Section -->
     <div class="row">
         <div class="col-12 text-center">
-            <h1 class="display-3">{{ idea.title }}</h1>
+            <h6 class="display-5">{{ idea.title }}</h6>
             <p class="lead text-muted">Category: <span class="badge bg-info">{{ idea.category }}</span></p>
         </div>
     </div>
@@ -14,13 +14,13 @@
     <div class="row mt-4">
         <div class="col-md-12">
             <h3>Overview</h3>
-            <p class="mb-4">{{ idea.description }}</p>
+            <p class="mb-4">{{ idea.description|striptags }}</p>
 
             <h4>Target Audience</h4>
-            <p>{{ idea.target_audience }}</p>
+            <p>{{ idea.target_audience|striptags }}</p>
 
             <h4>Market Opportunity</h4>
-            <p>{{ idea.market_opportunity }}</p>
+            <p>{{ idea.market_opportunity|striptags }}</p>
 
             <p class="text-muted">Created on: {{ idea.created_at|date:"d M Y" }}</p>
         </div>

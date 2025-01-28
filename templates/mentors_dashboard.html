@@ -54,6 +54,34 @@
                     <p class="text-center text-muted">Here’s a quick overview of your activities on IdeaBox.</p>
                 </div>
             </div>
+            <!-- Review Modal -->
+            <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="reviewModalLabel">Review Idea</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="reviewForm" method="POST" action="">
+                                {% csrf_token %}
+                                <input type="hidden" name="idea_id" id="ideaIdField">
+                                <div class="mb-3">
+                                    <label for="ideaTitle" class="form-label">Idea Title</label>
+                                    <input type="text" class="form-control" id="ideaTitle" name="idea_title" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="quillEditor" class="form-label">Your Review</label>
+                                    <div id="quillEditor" style="height: 200px;"></div>
+                                    <textarea name="review_content" id="reviewContent" hidden></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Idea Review Section -->
             <div class="row mt-5" id="ideaReviewSection">
@@ -76,7 +104,11 @@
                                 <td>{{idea.creator}}</td>
                                 <td>{{ idea.category }}</td>
                                 <td>
-                                    <a href="" class="btn btn-sm btn-primary">Review</a>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#reviewModal" data-idea-id="{{ idea.id }}"
+                                        data-idea-title="{{ idea.title }}">
+                                        Review
+                                    </button>
                                 </td>
                             </tr>
                             {% empty %}
@@ -125,4 +157,29 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("inside")
+        var quill = new Quill("#quillEditor", {
+            theme: "snow", // Choose 'snow' or 'bubble' theme
+            placeholder: "Write your review here...",
+            modules: {
+                toolbar: [
+                    [{ header: [1, 2, false] }],
+                    ["bold", "italic", "underline"],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    ["link"]
+                ]
+            }
+        });
+
+        // Sync content to hidden textarea for form submission
+        var reviewContent = document.getElementById("reviewContent");
+        quill.on("text-change", function () {
+            reviewContent.value = quill.root.innerHTML;
+        });
+    });
+</script>
 {% endblock %}
