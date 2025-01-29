@@ -15,7 +15,7 @@ from django.contrib.auth.hashers import make_password
 from django_select2.views import AutoResponseView
 User=get_user_model()
 from django.db.models import Q
-from .models import Profile,Skill,Idea,Post,Comment,Reply,Tag
+from .models import Profile,Skill,Idea,Post,Comment,Reply,Tag,Feedback
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -354,8 +354,37 @@ def idea_details(request,idea_id):
 
 @login_required
 def mentordashboard(request):
+	if request.user.role!='mentor':
+		messages.error(request, "Access Denied: Only mentors can view this page.")
+		return redirect('home')
 	ideas=Idea.objects.all()
 	return render(request,'mentors_dashboard.html',{'ideas':ideas})
+
+def submit_feedback(request, idea_id):
+    if request.user.role != 'mentor':
+        return JsonResponse({'success': False, 'message': 'Only mentors can submit feedback.'})
+    
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            content = data.get('content')
+            
+            if not content:
+                return JsonResponse({'success': False, 'message': 'Feedback content cannot be empty.'})
+            
+            idea = Idea.objects.get(id=idea_id)
+            Feedback.objects.create(idea=idea, mentor=request.user, content=content)
+            
+            return JsonResponse({'success': True, 'message': 'Feedback submitted successfully!'})
+        except Idea.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Idea does not exist.'})
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON format.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
 @login_required
 def discussion_forum(request):
 	tags = Tag.objects.all()
@@ -504,3 +533,4 @@ def delete_comment(request, comment_id):
 			comment.delete()
 			return JsonResponse({'success': True})
 		return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+

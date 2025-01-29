@@ -161,7 +161,20 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        console.log("inside")
+        var reviewModal = document.getElementById('reviewModal');
+        var ideaTitleField = document.getElementById('ideaTitle');
+        var ideaIdField = document.getElementById('ideaIdField');
+
+        reviewModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget; // Button that triggered the modal
+            var ideaId = button.getAttribute('data-idea-id'); // Extract info from data-* attributes
+            var ideaTitle = button.getAttribute('data-idea-title'); // Extract info from data-* attributes
+
+            // Update the modal's content.
+            ideaTitleField.value = ideaTitle;
+            ideaIdField.value = ideaId;
+        });
+
         var quill = new Quill("#quillEditor", {
             theme: "snow", // Choose 'snow' or 'bubble' theme
             placeholder: "Write your review here...",
@@ -175,11 +188,42 @@
             }
         });
 
-        // Sync content to hidden textarea for form submission
         var reviewContent = document.getElementById("reviewContent");
         quill.on("text-change", function () {
             reviewContent.value = quill.root.innerHTML;
         });
+
+        document.getElementById("reviewForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            let ideaId = ideaIdField.value;
+            let feedbackContent = reviewContent.value;
+
+            fetch(`/mentors-dashboard/submit-feedback/${ideaId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCSRFToken()
+                },
+                body: JSON.stringify({ content: feedbackContent })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        quill.root.innerHTML = "";
+                        reviewModal.hide();
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        });
+
+        function getCSRFToken() {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('csrftoken='))
+                ?.split('=')[1];
+            return cookieValue || '';
+        }
     });
 </script>
 {% endblock %}

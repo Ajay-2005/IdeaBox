@@ -22,6 +22,7 @@ urlpatterns = [
     path('dashboard/get-idea/<int:idea_id>/',views.get_idea,name='get-idea'),
     path('dashboard/idea-details/<int:idea_id>/',views.idea_details,name='idea-details'),
     path('mentors-dashboard/',views.mentordashboard,name='mentor-dashboard'),
+    path('mentors-dashboard/submit-feedback/<int:idea_id>/',views.submit_feedback,name='submit-feedback'),
     path('forum/',views.discussion_forum,name='discussion-forum'),
     path('forum/ask-question',views.submit_question,name='ask-question'),
     path('forum/post/<int:post_id>/', views.view_post, name='view_post'),
