@@ -103,22 +103,19 @@ class Idea(models.Model):
 		return self.title
 
 class Feedback(models.Model):
-	idea=models.ForeignKey(Idea,related_name='feedbacks',on_delete=models.CASCADE),
-	mentor=models.ForeignKey(User,related_name='mentor_feedbacks',on_delete=models.CASCADE),
-	content=models.TextField(),
-	created_at=models.DateTimeField(auto_now_add=True),
-	acknowledged=models.BooleanField(default=False)
-
-	def __str__(self):
-		return f" Feedback on {self.idea.title} by {self.mentor.username}"
+	idea = models.ForeignKey(Idea, related_name='feedbacks', on_delete=models.CASCADE,default=None)
+	mentor = models.ForeignKey(User, related_name='mentor_feedbacks', on_delete=models.CASCADE,default=None)
+	content = models.TextField(default="No feedback provided")
+	created_at = models.DateTimeField(default=now)  # Automatically set the field to now when the object is first created
+	acknowledged = models.BooleanField(default=False)
 
 class Acknowledgment(models.Model):
-    feedback = models.OneToOneField(Feedback, on_delete=models.CASCADE, related_name='acknowledgment')
-    response_content = models.TextField(blank=True, null=True)
-    responded_at = models.DateTimeField(auto_now_add=True)
+	feedback = models.OneToOneField(Feedback, on_delete=models.CASCADE, related_name='acknowledgment')
+	response_content = models.TextField(blank=True, null=True)
+	responded_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Acknowledgment for Feedback {self.feedback.id}"
+	def __str__(self):
+		return f"Acknowledgment for Feedback {self.feedback.id}"
 
 class Tag(models.Model):
 	name = models.CharField(max_length=50, unique=True)
@@ -138,24 +135,24 @@ class Post(models.Model):
 		return self.title
 
 class Comment(models.Model):
-    question = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="answers",default=1)
-    content = models.TextField(null=True, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_comments",default=1)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    upvotes = models.PositiveIntegerField(default=0)
-    downvotes = models.PositiveIntegerField(default=0)
+	question = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="answers",default=1)
+	content = models.TextField(null=True, blank=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_comments",default=1)
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+	upvotes = models.PositiveIntegerField(default=0)
+	downvotes = models.PositiveIntegerField(default=0)
 
-    def __str__(self):
-        return f"Answer by {self.created_by.username}"
+	def __str__(self):
+		return f"Answer by {self.created_by.username}"
 
 
 class Reply(models.Model):
-    comment = models.ForeignKey(Comment, related_name='replies', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    def __str__(self):
-        return f"Reply by {self.user.username} on Comment {self.comment.id}"
+	comment = models.ForeignKey(Comment, related_name='replies', on_delete=models.CASCADE)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	content = models.TextField()
+	created_at = models.DateTimeField(auto_now_add=True)
+	def __str__(self):
+		return f"Reply by {self.user.username} on Comment {self.comment.id}"
 
 
