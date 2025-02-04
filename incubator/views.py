@@ -94,56 +94,56 @@ def verify_otp(request):
 	return render(request,'auth/verify_otp.html')
 
 def login_view(request):
-    if request.method == 'POST':
-        form = CustomLoginForm(request, data=request.POST)
+	if request.method == 'POST':
+		form = CustomLoginForm(request, data=request.POST)
 
-        if not form.is_valid():
-            print("Form errors:", form.errors)
+		if not form.is_valid():
+			print("Form errors:", form.errors)
 
-        if form.is_valid():
-            username_or_email = form.cleaned_data['username']
-            password = form.cleaned_data['password']
+		if form.is_valid():
+			username_or_email = form.cleaned_data['username']
+			password = form.cleaned_data['password']
 
-            if '@' in username_or_email:
-                try:
-                    user_obj = User.objects.get(email=username_or_email)
-                    username = user_obj.username
-                except User.DoesNotExist:
-                    messages.error(request, "Invalid email or password.")
-                    return render(request, 'auth/login.html', {'form': form})
-            else:
-                username = username_or_email
+			if '@' in username_or_email:
+				try:
+					user_obj = User.objects.get(email=username_or_email)
+					username = user_obj.username
+				except User.DoesNotExist:
+					messages.error(request, "Invalid email or password.")
+					return render(request, 'auth/login.html', {'form': form})
+			else:
+				username = username_or_email
 
-            user = authenticate(request, username=username, password=password)
-            if user:
-                login(request, user)
+			user = authenticate(request, username=username, password=password)
+			if user:
+				login(request, user)
 
-                # Handle "remember me"
-                if not form.cleaned_data.get('remember_me'):
-                    request.session.set_expiry(0)
+				# Handle "remember me"
+				if not form.cleaned_data.get('remember_me'):
+					request.session.set_expiry(0)
 
-                # Redirect based on `next` parameter or user role
-                next_url = request.GET.get('next')
-                if next_url:
-                    return redirect(next_url)
-                elif user.role == 'mentor':  # Example: Redirect mentors
-                    return redirect('mentor-dashboard')
-                elif user.role == 'entrepreneur':  # Example: Redirect entrepreneurs
-                    return redirect('dashboard')
-                elif user.role == 'collaborator':  # Example: Redirect collaborators
-                    return redirect('/')
-                else:  # Default redirect for undefined roles
-                    messages.warning(request, "Role not defined. Redirecting to home.")
-                    return redirect('home')
+				# Redirect based on `next` parameter or user role
+				next_url = request.GET.get('next')
+				if next_url:
+					return redirect(next_url)
+				elif user.role == 'mentor':  # Example: Redirect mentors
+					return redirect('mentor-dashboard')
+				elif user.role == 'entrepreneur':  # Example: Redirect entrepreneurs
+					return redirect('dashboard')
+				elif user.role == 'collaborator':  # Example: Redirect collaborators
+					return redirect('/')
+				else:  # Default redirect for undefined roles
+					messages.warning(request, "Role not defined. Redirecting to home.")
+					return redirect('home')
 
-            else:
-                messages.error(request, "Invalid username or password.")
-        else:
-            messages.error(request, "Please correct the errors below.")
-    else:
-        form = CustomLoginForm()
+			else:
+				messages.error(request, "Invalid username or password.")
+		else:
+			messages.error(request, "Please correct the errors below.")
+	else:
+		form = CustomLoginForm()
 
-    return render(request, 'auth/login.html', {'form': form})
+	return render(request, 'auth/login.html', {'form': form})
 
 def resend_otp(request):
 	email = request.session.get("email")
@@ -263,12 +263,16 @@ def profile_setup(request):
 		return redirect('dashboard')
 	
 	return render(request, 'profile_setup.html', {'profile': profile})
-
 @login_required
-def profile(request):
-	profile=Profile.objects.get(username=request.user)
-	return render(request,'profile.html',{'profile':profile})
+def profile(request, user_id=None):
+	if user_id:  
+		# Get the user first, then fetch the profile
+		user = get_object_or_404(User, id=user_id)
+		profile = get_object_or_404(Profile, username=user)
+	else:
+		profile = get_object_or_404(Profile, username=request.user)
 
+	return render(request, 'profile.html', {'profile': profile})
 
 class CustomSkillAutoResponseForm(AutoResponseView):
 	def get(self, request, *args, **kwargs):
@@ -279,10 +283,15 @@ class CustomSkillAutoResponseForm(AutoResponseView):
 @login_required
 def dashboard(request):
 	ideas = Idea.objects.filter(creator=request.user)
+	feedbacks = Feedback.objects.filter(idea__in=ideas).select_related('mentor')
+
+
 	context = {
 		'ideas': ideas,
+		'feedbacks': feedbacks
 	}
-	return render(request,'dashboard.html',context)
+	return render(request, 'dashboard.html', context)
+
 @login_required
 def submit_idea(request):
 	if request.method=='POST':
@@ -327,14 +336,14 @@ def idea_list(request):
 
 @login_required
 def delete_idea(request, idea_id):
-    if request.method == 'POST':
-        idea = get_object_or_404(Idea, id=idea_id)
-        if request.user == idea.creator:
-            idea.delete()
-            return JsonResponse({'success': True}) 
-        else:
-            return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
-    return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
+	if request.method == 'POST':
+		idea = get_object_or_404(Idea, id=idea_id)
+		if request.user == idea.creator:
+			idea.delete()
+			return JsonResponse({'success': True}) 
+		else:
+			return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+	return JsonResponse({'success': False, 'message': 'Invalid request'}, status=400)
 
 def get_idea(request, idea_id):
 	idea = get_object_or_404(Idea, id=idea_id)
@@ -361,29 +370,36 @@ def mentordashboard(request):
 	return render(request,'mentors_dashboard.html',{'ideas':ideas})
 
 def submit_feedback(request, idea_id):
-    if request.user.role != 'mentor':
-        return JsonResponse({'success': False, 'message': 'Only mentors can submit feedback.'})
-    
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            content = data.get('content')
-            
-            if not content:
-                return JsonResponse({'success': False, 'message': 'Feedback content cannot be empty.'})
-            
-            idea = Idea.objects.get(id=idea_id)
-            Feedback.objects.create(idea=idea, mentor=request.user, content=content)
-            
-            return JsonResponse({'success': True, 'message': 'Feedback submitted successfully!'})
-        except Idea.DoesNotExist:
-            return JsonResponse({'success': False, 'message': 'Idea does not exist.'})
-        except json.JSONDecodeError:
-            return JsonResponse({'success': False, 'message': 'Invalid JSON format.'})
-        except Exception as e:
-            return JsonResponse({'success': False, 'message': str(e)})
-    
-    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+	if request.user.role != 'mentor':
+		return JsonResponse({'success': False, 'message': 'Only mentors can submit feedback.'})
+	
+	if request.method == 'POST':
+		try:
+			data = json.loads(request.body)
+			content = data.get('content')
+			
+			if not content:
+				return JsonResponse({'success': False, 'message': 'Feedback content cannot be empty.'})
+			
+			idea = Idea.objects.get(id=idea_id)
+			Feedback.objects.create(idea=idea, mentor=request.user, content=content)
+			
+			return JsonResponse({'success': True, 'message': 'Feedback submitted successfully!'})
+		except Idea.DoesNotExist:
+			return JsonResponse({'success': False, 'message': 'Idea does not exist.'})
+		except json.JSONDecodeError:
+			return JsonResponse({'success': False, 'message': 'Invalid JSON format.'})
+		except Exception as e:
+			return JsonResponse({'success': False, 'message': str(e)})
+	
+	return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+@login_required
+def view_feedback(request, id):
+	feedback = get_object_or_404(Feedback, id=id)
+	print(feedback)
+	# Make sure you're passing the 'feedback' object as context
+	return render(request, 'feedback.html', {'feedback': feedback})
 
 @login_required
 def discussion_forum(request):
