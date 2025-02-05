@@ -1,0 +1,187 @@
+{% extends "partials/bootstrap.html" %}
+{% block navbar %}
+<nav class="navbar navbar-expand-lg fixed-top custom-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white" href="#">
+            <i class="fas fa-lightbulb custom-icon"></i><span class="title-idea">dea</span><span
+                class="title-box">Box</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'profile' %}">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 p-0 bg-info fixed-top" style="top: 56px; height: calc(100vh - 56px);">
+            <ul class="nav flex-column p-3">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#collaborationRequestsSection">Collaboration Requests</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#activeProjectsSection">Active Projects</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'discussion-forum' %}">Discussion Forum</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#recentActivitiesSection">Recent Activities</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 ms-md-auto mt-4" style="margin-left: 250px; padding: 20px;">
+            <!-- Welcome Section -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h2 class="text-center">Welcome, {{ user.username }}!</h2>
+                    <p class="text-center text-muted">Here’s an overview of your ongoing collaborations on IdeaBox.</p>
+                </div>
+            </div>
+
+            <!-- Collaboration Requests Section -->
+            <div class="row mt-5" id="collaborationRequestsSection">
+                <div class="col-12">
+                    <h4>Collaboration Requests</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Idea Title</th>
+                                <th>Submitted By</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>AI-Based Healthcare App</td>
+                                <td>John Doe</td>
+                                <td>Pending</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#collaborationRequestModal" data-idea-id="1">
+                                        Request
+                                    </button>
+                                    <button class="btn btn-sm btn-danger">Decline</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Blockchain for Supply Chain</td>
+                                <td>Jane Smith</td>
+                                <td>Accepted</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" disabled>Accepted</button>
+                                    <button class="btn btn-sm btn-danger" disabled>Declined</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sustainable Energy Solutions</td>
+                                <td>Emily Johnson</td>
+                                <td>Declined</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" disabled>Accepted</button>
+                                    <button class="btn btn-sm btn-danger" disabled>Declined</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Idea Review Section -->
+            <div class="row mt-5" id="ideaReviewSection">
+                <div class="col-12">
+                    <h4>Ideas Awaiting For your contributions</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Submitted By</th>
+                                <th>Category</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for idea in ideas %}
+                            <tr>
+                                <td><a href="{% url 'idea-details' idea.id %}"
+                                        style="text-decoration: none; color: black;">{{ idea.title }}</a></td>
+                                <td>{{idea.creator}}</td>
+                                <td>{{ idea.category }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#collaborationRequestModal" data-idea-id="{{ idea.id }}" data-idea-title="{{ idea.title }}">
+                                        Request
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No ideas awaiting review.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal for Collaboration Request -->
+            <div class="modal fade" id="collaborationRequestModal" tabindex="-1" aria-labelledby="collaborationRequestModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="collaborationRequestModalLabel">Request Collaboration</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="">
+                                {% csrf_token %}
+                                <input type="hidden" name="idea_id" id="idea_id" value="">
+                                <div class="mb-3">
+                                    <label for="message" class="form-label">Message</label>
+                                    <textarea class="form-control" id="message" name="message" rows="3" placeholder="Write a message for the idea creator"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <button type="submit" class="btn btn-primary">Send Request</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<script>
+    // JavaScript to set the idea ID in the modal when a "Request" button is clicked
+    const collaborationRequestModal = document.getElementById('collaborationRequestModal');
+    collaborationRequestModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Button that triggered the modal
+        const ideaId = button.getAttribute('data-idea-id'); // Extract info from data-* attributes
+        const ideaTitle = button.getAttribute('data-idea-title');
+        
+        // Update the modal's content.
+        const modalTitle = collaborationRequestModal.querySelector('.modal-title');
+        const ideaIdInput = collaborationRequestModal.querySelector('#idea_id');
+        
+        modalTitle.textContent = 'Request Collaboration for ' + ideaTitle;
+        ideaIdInput.value = ideaId;
+    });
+</script>

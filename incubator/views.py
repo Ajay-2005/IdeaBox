@@ -398,9 +398,11 @@ def submit_feedback(request, idea_id):
 def view_feedback(request, id):
 	feedback = get_object_or_404(Feedback, id=id)
 	print(feedback)
-	# Make sure you're passing the 'feedback' object as context
 	return render(request, 'feedback.html', {'feedback': feedback})
 
+def collaborator_dashboard(request):
+	ideas=Idea.objects.all()
+	return render(request,'collaborator_dashboard.html',{'ideas':ideas})
 @login_required
 def discussion_forum(request):
 	tags = Tag.objects.all()
@@ -428,6 +430,7 @@ def submit_question(request):
 			print(e)
 			return JsonResponse({"status": "error", "message": str(e)}, status=400)
 	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=400)
+
 
 @login_required
 def add_comment(request):

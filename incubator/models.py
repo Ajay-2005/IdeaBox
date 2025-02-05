@@ -117,6 +117,33 @@ class Acknowledgment(models.Model):
 	def __str__(self):
 		return f"Acknowledgment for Feedback {self.feedback.id}"
 
+class CollaborationRequest(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Accepted', 'Accepted'),
+        ('Declined', 'Declined'),
+    ]
+
+    idea = models.ForeignKey(Idea, related_name='collaboration_requests', on_delete=models.CASCADE)
+    requester = models.ForeignKey(User, related_name='sent_collab_requests', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    message = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.requester.username} -> {self.idea.title} ({self.status})"
+
+class Collaboration(models.Model):
+    idea = models.ForeignKey(Idea, related_name='collaborations', on_delete=models.CASCADE)
+    collaborator = models.ForeignKey(User, related_name='collaborations', on_delete=models.CASCADE)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    role = models.CharField(max_length=100, blank=True, null=True)  # Example: "Mentor", "Co-founder", etc.
+
+    def __str__(self):
+        return f"{self.collaborator.username} collaborating on {self.idea.title}"
+
+
 class Tag(models.Model):
 	name = models.CharField(max_length=50, unique=True)
 
