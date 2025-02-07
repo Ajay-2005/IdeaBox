@@ -74,7 +74,8 @@
                                 <td>John Doe</td>
                                 <td>Pending</td>
                                 <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#collaborationRequestModal" data-idea-id="1">
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#collaborationRequestModal" data-idea-id="1">
                                         Request
                                     </button>
                                     <button class="btn btn-sm btn-danger">Decline</button>
@@ -125,7 +126,8 @@
                                 <td>{{ idea.category }}</td>
                                 <td>
                                     <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#collaborationRequestModal" data-idea-id="{{ idea.id }}" data-idea-title="{{ idea.title }}">
+                                        data-bs-target="#collaborationRequestModal" data-idea-id="{{ idea.id }}"
+                                        data-idea-title="{{ idea.title }}">
                                         Request
                                     </button>
                                 </td>
@@ -141,7 +143,8 @@
             </div>
 
             <!-- Modal for Collaboration Request -->
-            <div class="modal fade" id="collaborationRequestModal" tabindex="-1" aria-labelledby="collaborationRequestModalLabel" aria-hidden="true">
+            <div class="modal fade" id="collaborationRequestModal" tabindex="-1"
+                aria-labelledby="collaborationRequestModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -149,12 +152,13 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form method="POST" action="">
+                            <form method="POST" id="collaborationForm">
                                 {% csrf_token %}
                                 <input type="hidden" name="idea_id" id="idea_id" value="">
                                 <div class="mb-3">
                                     <label for="message" class="form-label">Message</label>
-                                    <textarea class="form-control" id="message" name="message" rows="3" placeholder="Write a message for the idea creator"></textarea>
+                                    <textarea class="form-control" id="message" name="message" rows="3"
+                                        placeholder="Write a message"></textarea>
                                 </div>
                                 <div class="mb-3">
                                     <button type="submit" class="btn btn-primary">Send Request</button>
@@ -167,21 +171,54 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
 <script>
-    // JavaScript to set the idea ID in the modal when a "Request" button is clicked
-    const collaborationRequestModal = document.getElementById('collaborationRequestModal');
-    collaborationRequestModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget; // Button that triggered the modal
-        const ideaId = button.getAttribute('data-idea-id'); // Extract info from data-* attributes
-        const ideaTitle = button.getAttribute('data-idea-title');
-        
-        // Update the modal's content.
-        const modalTitle = collaborationRequestModal.querySelector('.modal-title');
-        const ideaIdInput = collaborationRequestModal.querySelector('#idea_id');
-        
-        modalTitle.textContent = 'Request Collaboration for ' + ideaTitle;
-        ideaIdInput.value = ideaId;
+    document.addEventListener("DOMContentLoaded", function () {
+        console.log("inside dom")
+        const collaborationRequestModal = document.getElementById('collaborationRequestModal');
+        const collaborationForm = document.getElementById('collaborationForm');
+        const responseMessage = document.getElementById('responseMessage');
+
+        collaborationRequestModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const ideaId = button.getAttribute('data-idea-id');
+            const ideaTitle = button.getAttribute('data-idea-title');
+
+            // Update modal title
+            document.getElementById('collaborationRequestModalLabel').textContent = `Request Collaboration for ${ideaTitle}`;
+
+            // Update hidden input
+            document.getElementById('idea_id').value = ideaId;
+        });
+
+        collaborationForm.addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const ideaId = document.getElementById('idea_id').value;
+            const formData = new FormData(collaborationForm);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch(`/ideas/${ideaId}/request-collaboration/`, {  // <-- Updated URL
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    alert("Collaboration request submitted")
+                    // Close the modal after a short delay
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(collaborationRequestModal);
+                        modal.hide();
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.log(Error)
+                    alert("Error occur during submiting collaboration request")
+                });
+        });
     });
 </script>
+{% endblock %}

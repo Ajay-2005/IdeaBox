@@ -15,7 +15,7 @@ from django.contrib.auth.hashers import make_password
 from django_select2.views import AutoResponseView
 User=get_user_model()
 from django.db.models import Q
-from .models import Profile,Skill,Idea,Post,Comment,Reply,Tag,Feedback
+from .models import Profile,Skill,Idea,Post,Comment,Reply,Tag,Feedback,CollaborationRequest
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -131,7 +131,7 @@ def login_view(request):
 				elif user.role == 'entrepreneur':  # Example: Redirect entrepreneurs
 					return redirect('dashboard')
 				elif user.role == 'collaborator':  # Example: Redirect collaborators
-					return redirect('/')
+					return redirect('collaborator_dashboard')
 				else:  # Default redirect for undefined roles
 					messages.warning(request, "Role not defined. Redirecting to home.")
 					return redirect('home')
@@ -282,6 +282,10 @@ class CustomSkillAutoResponseForm(AutoResponseView):
 		return JsonResponse({'results': results})
 @login_required
 def dashboard(request):
+	if request.user.role!='entrepreneur':
+		messages.error(request, "Access Denied: Only Entrepenurs can view this page.")
+		return redirect('home')
+
 	ideas = Idea.objects.filter(creator=request.user)
 	feedbacks = Feedback.objects.filter(idea__in=ideas).select_related('mentor')
 
@@ -291,6 +295,8 @@ def dashboard(request):
 		'feedbacks': feedbacks
 	}
 	return render(request, 'dashboard.html', context)
+
+
 
 @login_required
 def submit_idea(request):
@@ -399,10 +405,30 @@ def view_feedback(request, id):
 	feedback = get_object_or_404(Feedback, id=id)
 	print(feedback)
 	return render(request, 'feedback.html', {'feedback': feedback})
-
+@login_required
 def collaborator_dashboard(request):
+	if request.user.role!='collaborator':
+		messages.error(request, "Access Denied: Only collaborator can view this page.")
+		return redirect('home')
 	ideas=Idea.objects.all()
 	return render(request,'collaborator_dashboard.html',{'ideas':ideas})
+
+
+@login_required
+def submit_collaboration_request(request,idea_id):
+    if request.method == 'POST':
+        message = request.POST.get('message')
+
+        CollaborationRequest.objects.create(
+            idea_id=idea_id,
+            requester=request.user,
+            message=message
+        )
+
+        return JsonResponse({'status': 'success', 'message': 'Collaboration request sent successfully!'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
 @login_required
 def discussion_forum(request):
 	tags = Tag.objects.all()
