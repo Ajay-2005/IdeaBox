@@ -98,7 +98,7 @@
 					<div class="card shadow-sm text-center">
 						<div class="card-body">
 							<h5 class="card-title">Feedback Received</h5>
-							<h2 class="text-primary">15</h2>
+							<h2 class="text-primary">{{feedbacks_count}}</h2>
 							<p class="card-text">Total feedback received on your ideas.</p>
 						</div>
 					</div>
@@ -108,11 +108,12 @@
 					<div class="card shadow-sm text-center">
 						<div class="card-body">
 							<h5 class="card-title">Collaboration Requests</h5>
-							<h2 class="text-success">3</h2>
-							<p class="card-text">Pending collaboration requests.</p>
+							<h2 class="text-success">{{collaboration_request_count}}</h2>
+							<p class="card-text">Pending collaboration_requests</p>
 						</div>
 					</div>
 				</div>
+
 
 				<div class="col-md-4">
 					<div class="card shadow-sm text-center">
@@ -193,6 +194,67 @@
 								<td colspan="4" class="text-center text-muted">No feedback received yet.</td>
 							</tr>
 							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row mt-5">
+				<div class="col-12">
+					<h4>Collaboration Requests</h4>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Startup Idea</th>
+								<th>Requested By</th>
+								<th>Requested At</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for request in collaboration_requests %}
+							<tr>
+								<td>
+									<a href="{% url 'idea-details' request.idea_id %}"
+										style="text-decoration: none; color: black;">
+										{{ request.idea.title }}
+									</a>
+								</td>
+								<td>
+									<a href="{% url 'profile_view' request.requester_id %}"
+										style="text-decoration: none; color: black;">
+										{{ request.requester.username }}
+									</a>
+								</td>
+								<td>{{ request.created_at|date:"d M Y" }}</td>
+								<td>
+									<button class="btn btn-sm btn-info" type="button" data-bs-toggle="collapse"
+										data-bs-target="#feedback-{{ request.id }}">
+										View
+									</button>
+								</td>
+							</tr>
+							<div class="mt-2">
+								<tr class="collapse" id="feedback-{{ request.id }}">
+									<td colspan="4">
+										<div class="alert alert-secondary d-flex justify-content-between">
+											<div>
+												<strong>Message:</strong> {{ request.message }}
+											</div>
+											<div>
+												<button onclick="handleCollaboration('{{ request.id }}', 'accept')"
+													class="btn btn-success btn-sm mx-2 p-2">Accept</button>
+												<button onclick="handleCollaboration('{{ request.id }}', 'reject')"
+													class="btn btn-danger btn-sm p-2">Reject</button>
+											</div>
+										</div>
+										<div id="response-message-{{ request.id }}" class="mt-2"></div>
+									</td>
+								</tr>
+
+							</div>
+
+							{% endfor %}
+
 						</tbody>
 					</table>
 				</div>

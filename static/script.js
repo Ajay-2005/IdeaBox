@@ -70,3 +70,24 @@ function getCSRFToken() {
 }
 
 
+function handleCollaboration(requestId, action) {
+	fetch(`/ideas/${requestId}/handle-collaboration/`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+			"X-CSRFToken": getCSRFToken() // Ensure CSRF token is included
+		},
+		body: `response=${action}`
+	})
+		.then(response => response.json())
+		.then(data => {
+			alert(data.message); // Show the response message in an alert box
+			if (data.success) {
+				location.reload; // Reload the page to reflect changes
+			}
+		})
+		.catch(error => console.error("Error:", error));
+}
+
+
+

@@ -106,7 +106,7 @@ class Feedback(models.Model):
 	idea = models.ForeignKey(Idea, related_name='feedbacks', on_delete=models.CASCADE,default=None)
 	mentor = models.ForeignKey(User, related_name='mentor_feedbacks', on_delete=models.CASCADE,default=None)
 	content = models.TextField(default="No feedback provided")
-	created_at = models.DateTimeField(default=now)  # Automatically set the field to now when the object is first created
+	created_at = models.DateTimeField(default=now)  
 	acknowledged = models.BooleanField(default=False)
 
 class Acknowledgment(models.Model):
@@ -138,7 +138,7 @@ class Collaboration(models.Model):
     idea = models.ForeignKey(Idea, related_name='collaborations', on_delete=models.CASCADE)
     collaborator = models.ForeignKey(User, related_name='collaborations', on_delete=models.CASCADE)
     joined_at = models.DateTimeField(auto_now_add=True)
-    role = models.CharField(max_length=100, blank=True, null=True)  # Example: "Mentor", "Co-founder", etc.
+    role = models.CharField(max_length=100, blank=True, null=True) 
 
     def __str__(self):
         return f"{self.collaborator.username} collaborating on {self.idea.title}"

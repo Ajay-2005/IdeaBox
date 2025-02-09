@@ -15,7 +15,7 @@ from django.contrib.auth.hashers import make_password
 from django_select2.views import AutoResponseView
 User=get_user_model()
 from django.db.models import Q
-from .models import Profile,Skill,Idea,Post,Comment,Reply,Tag,Feedback,CollaborationRequest
+from .models import Profile,Skill,Idea,Post,Comment,Reply,Tag,Feedback,CollaborationRequest,Collaboration
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -288,11 +288,16 @@ def dashboard(request):
 
 	ideas = Idea.objects.filter(creator=request.user)
 	feedbacks = Feedback.objects.filter(idea__in=ideas).select_related('mentor')
-
-
+	collaboration_requests = CollaborationRequest.objects.filter(idea__in=ideas).select_related('requester')
+	feedbacks_count=feedbacks.count()
+	collaboration_requests_count=collaboration_requests.count()
+	
 	context = {
 		'ideas': ideas,
-		'feedbacks': feedbacks
+		'feedbacks': feedbacks,
+		'feedbacks_count':feedbacks_count,
+		'collaboration_requests':collaboration_requests,
+		'collaboration_request_count':collaboration_requests_count
 	}
 	return render(request, 'dashboard.html', context)
 
@@ -428,6 +433,35 @@ def submit_collaboration_request(request,idea_id):
         return JsonResponse({'status': 'success', 'message': 'Collaboration request sent successfully!'})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+
+login_required
+def handle_collaborationRequest(request, idea_id):
+    if request.method == "POST":
+        response = request.POST.get("response")  
+        collaboration_request = get_object_or_404(CollaborationRequest, id=idea_id)
+
+        if request.user != collaboration_request.idea.creator:
+            return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+
+        if response == "accept":
+            collaboration_request.status = "Accepted"
+            Collaboration.objects.create(
+                idea=collaboration_request.idea,
+                collaborator=collaboration_request.requester, 
+                role="Collaborator"  
+            )
+
+            message = "Collaboration request accepted successfully!"
+        elif response == "reject":
+            collaboration_request.status = "Rejected"
+            message = "Collaboration request declined successfully!"
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid action'}, status=400)
+
+        collaboration_request.save()
+        return JsonResponse({'success': True, 'message': message})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
 
 @login_required
 def discussion_forum(request):

@@ -26,6 +26,7 @@ urlpatterns = [
 	path('mentors-dashboard/',views.mentordashboard,name='mentor-dashboard'),
     path('collaborator-dashboard',views.collaborator_dashboard,name='collaborator_dashboard'),
     path('ideas/<int:idea_id>/request-collaboration/',views.submit_collaboration_request, name='submit_collaboration_request'),
+    path('ideas/<int:idea_id>/handle-collaboration/',views.handle_collaborationRequest, name='handle_collaborationRequest'),
 	path('mentors-dashboard/submit-feedback/<int:idea_id>/',views.submit_feedback,name='submit-feedback'),
 	path('forum/',views.discussion_forum,name='discussion-forum'),
 	path('forum/ask-question',views.submit_question,name='ask-question'),
