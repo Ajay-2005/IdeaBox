@@ -46,7 +46,7 @@ class Profile(models.Model):
 		null=True,
 		validators=[
 			RegexValidator(
-				regex=r'^[6-9]\d{9}$',  # Only accepts 10-digit numbers starting with 6, 7, 8, or 9
+				regex=r'^[6-9]\d{9}$',  
 				message="Enter a valid 10-digit phone number starting with 6, 7, 8, or 9."
 			)
 		]
@@ -95,8 +95,8 @@ class Idea(models.Model):
 		choices=VISIBILITY_CHOICES,
 		default='Public'
 	)
-	target_audience = models.TextField(blank=True, null=True)  # Allows null/empty values
-	market_opportunity = models.TextField(blank=True, null=True)  # Allows null/empty values
+	target_audience = models.TextField(blank=True, null=True)  
+	market_opportunity = models.TextField(blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):

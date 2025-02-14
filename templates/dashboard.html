@@ -125,7 +125,6 @@
 					</div>
 				</div>
 			</div>
-
 			<div class="row mt-5" id="ideaManagementSection">
 				<div class="col-12">
 					<h4>Manage Your Ideas</h4>
@@ -162,6 +161,7 @@
 					</table>
 				</div>
 			</div>
+
 			<div class="row mt-5">
 				<div class="col-12">
 					<h4>Recent Feedback</h4>
@@ -198,6 +198,53 @@
 					</table>
 				</div>
 			</div>
+			<div class="row mt-5">
+				<div class="col-12">
+					<h4>Collaborators</h4>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Startup Idea</th>
+								<th>Collaborator</th>
+								<th>Joined At</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for collab in collaborators %}
+							<tr>
+								<td>
+									<a href="{% url 'idea-details' collab.idea.id %}"
+										style="text-decoration: none; color: black;">
+										{{ collab.idea.title}}
+									</a>
+								</td>
+								<td>
+									<a href="{% url 'profile_view' collab.collaborator.id %}"
+										style="text-decoration: none; color: black;">
+										{{ collab.collaborator.username }}
+									</a>
+								</td>
+								<td>{{ collab.joined_at|date:"d M Y" }}</td>
+								<td>
+									<button class="btn btn-sm btn-info" data-bs-toggle="modal"
+										data-bs-target="#viewCollaboratorModal-{{ collaborator.id }}">
+										View
+									</button>
+								</td>
+							</tr>
+
+							
+							{% empty %}
+							<tr>
+								<td colspan="4" class="text-center text-muted">No collaborators yet.</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
 			<div class="row mt-5">
 				<div class="col-12">
 					<h4>Collaboration Requests</h4>

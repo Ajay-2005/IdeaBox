@@ -291,13 +291,17 @@ def dashboard(request):
 	collaboration_requests = CollaborationRequest.objects.filter(idea__in=ideas).select_related('requester')
 	feedbacks_count=feedbacks.count()
 	collaboration_requests_count=collaboration_requests.count()
-	
+	collaborators = Collaboration.objects.filter(idea__in=list(ideas))
+	print(collaborators)
+
+
 	context = {
 		'ideas': ideas,
 		'feedbacks': feedbacks,
 		'feedbacks_count':feedbacks_count,
 		'collaboration_requests':collaboration_requests,
-		'collaboration_request_count':collaboration_requests_count
+		'collaboration_request_count':collaboration_requests_count,
+		'collaborators':collaborators
 	}
 	return render(request, 'dashboard.html', context)
 
@@ -421,47 +425,49 @@ def collaborator_dashboard(request):
 
 @login_required
 def submit_collaboration_request(request,idea_id):
-    if request.method == 'POST':
-        message = request.POST.get('message')
+	if request.method == 'POST':
+		message = request.POST.get('message')
 
-        CollaborationRequest.objects.create(
-            idea_id=idea_id,
-            requester=request.user,
-            message=message
-        )
+		CollaborationRequest.objects.create(
+			idea_id=idea_id,
+			requester=request.user,
+			message=message
+		)
 
-        return JsonResponse({'status': 'success', 'message': 'Collaboration request sent successfully!'})
+		return JsonResponse({'status': 'success', 'message': 'Collaboration request sent successfully!'})
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
+	return JsonResponse({'status': 'error', 'message': 'Invalid request'}, status=400)
 
 login_required
 def handle_collaborationRequest(request, idea_id):
-    if request.method == "POST":
-        response = request.POST.get("response")  
-        collaboration_request = get_object_or_404(CollaborationRequest, id=idea_id)
+	if request.method == "POST":
+		response = request.POST.get("response")  
+		collaboration_request = get_object_or_404(CollaborationRequest, id=idea_id)
 
-        if request.user != collaboration_request.idea.creator:
-            return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+		if request.user != collaboration_request.idea.creator:
+			return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
 
-        if response == "accept":
-            collaboration_request.status = "Accepted"
-            Collaboration.objects.create(
-                idea=collaboration_request.idea,
-                collaborator=collaboration_request.requester, 
-                role="Collaborator"  
-            )
+		if response == "accept":
+			collaboration_request.status = "Accepted"
+			Collaboration.objects.create(
+				idea=collaboration_request.idea,
+				collaborator=collaboration_request.requester, 
+				role="Collaborator"  
+			)
 
-            message = "Collaboration request accepted successfully!"
-        elif response == "reject":
-            collaboration_request.status = "Rejected"
-            message = "Collaboration request declined successfully!"
-        else:
-            return JsonResponse({'success': False, 'message': 'Invalid action'}, status=400)
+			message = "Collaboration request accepted successfully!"
+		elif response == "reject":
+			collaboration_request.status = "Rejected"
+			message = "Collaboration request declined successfully!"
+		else:
+			return JsonResponse({'success': False, 'message': 'Invalid action'}, status=400)
 
-        collaboration_request.save()
-        return JsonResponse({'success': True, 'message': message})
+		collaboration_request.save()# save the status to help track the request
+		collaboration_request.delete() #delete the request after accepting or rejecting
+		return JsonResponse({'success': True, 'message': message})
 
-    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+	return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+
 
 @login_required
 def discussion_forum(request):
@@ -612,4 +618,3 @@ def delete_comment(request, comment_id):
 			comment.delete()
 			return JsonResponse({'success': True})
 		return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
-
