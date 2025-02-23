@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.utils.timezone import now, timedelta
 from .forms import CustomSignupForm,CustomLoginForm
 from .utils import send_otp
@@ -15,7 +15,7 @@ from django.contrib.auth.hashers import make_password
 from django_select2.views import AutoResponseView
 User=get_user_model()
 from django.db.models import Q
-from .models import Profile,Skill,Idea,Post,Comment,Reply,Tag,Feedback,CollaborationRequest,Collaboration
+from .models import Acknowledgment, Profile,Skill,Idea,Post,Comment,Reply,Tag,Feedback,CollaborationRequest,Collaboration
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
@@ -280,6 +280,7 @@ class CustomSkillAutoResponseForm(AutoResponseView):
 		skills = Skill.objects.filter(name__icontains=term) if term else Skill.objects.none()
 		results = [{'id': skill.id, 'text': skill.name} for skill in skills]
 		return JsonResponse({'results': results})
+
 @login_required
 def dashboard(request):
 	if request.user.role!='entrepreneur':
@@ -304,7 +305,6 @@ def dashboard(request):
 		'collaborators':collaborators
 	}
 	return render(request, 'dashboard.html', context)
-
 
 
 @login_required
@@ -382,8 +382,25 @@ def mentordashboard(request):
 		messages.error(request, "Access Denied: Only mentors can view this page.")
 		return redirect('home')
 	ideas=Idea.objects.all()
-	return render(request,'mentors_dashboard.html',{'ideas':ideas})
+	feedbacks=Feedback.objects.filter(mentor=request.user)
+	print(feedbacks)
+	return render(request,'mentors_dashboard.html',{'ideas':ideas,'feedbacks':feedbacks})
 
+@login_required
+def acknowledge_feedback(request, feedback_id):
+    if request.method == 'POST':
+        response_content = request.POST.get('response_content') 
+        feedback = get_object_or_404(Feedback, id=feedback_id)
+        Acknowledgment.objects.create(feedback=feedback, response_content=response_content)
+        feedback.acknowledged = True
+        feedback.save()
+        return redirect(request.META.get('HTTP_REFERER', 'dashboard'))  # Fallback to 'dashboard'
+
+    return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=400)
+
+
+
+@login_required					  
 def submit_feedback(request, idea_id):
 	if request.user.role != 'mentor':
 		return JsonResponse({'success': False, 'message': 'Only mentors can submit feedback.'})
@@ -408,7 +425,27 @@ def submit_feedback(request, idea_id):
 			return JsonResponse({'success': False, 'message': str(e)})
 	
 	return JsonResponse({'success': False, 'message': 'Invalid request method.'})
-
+@login_required
+def edit_feedback(request, feedback_id):
+	if request.method == 'POST':
+		data = json.loads(request.body)
+		feedback = get_object_or_404(Feedback, id=feedback_id)
+		if request.user == feedback.mentor:
+			feedback.content = data.get('content')
+			feedback.save()
+			return JsonResponse({'success': True, 'message': 'Feedback updated successfully!'})
+		return JsonResponse({'success': False, 'message': 'Unauthorized'}, status=403)
+	return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
+@login_required
+def delete_feedback(request,feedback_id):
+	if request.method=='POST':
+		feedback=get_object_or_404(Feedback,id=feedback_id)
+		if request.user==feedback.mentor:
+			feedback.delete()
+			return JsonResponse({'success':True})
+		return JsonResponse({'success':False,'message':'Unauthorized'},status=403)
+	return JsonResponse({'success':False,'message':'Invalid request'},status=400)
+	
 @login_required
 def view_feedback(request, id):
 	feedback = get_object_or_404(Feedback, id=id)
@@ -467,7 +504,6 @@ def handle_collaborationRequest(request, idea_id):
 		return JsonResponse({'success': True, 'message': message})
 
 	return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
-
 
 @login_required
 def discussion_forum(request):

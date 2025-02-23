@@ -161,7 +161,6 @@
 					</table>
 				</div>
 			</div>
-
 			<div class="row mt-5">
 				<div class="col-12">
 					<h4>Recent Feedback</h4>
@@ -177,17 +176,70 @@
 						<tbody>
 							{% for feedback in feedbacks %}
 							<tr>
-								<td><a href="{% url 'idea-details' feedback.idea.id %}"
-										style="text-decoration: none;color:black">{{ feedback.idea.title }}</a></td>
-								<td> <a href="{% url 'profile_view' feedback.mentor.id %}"
+								<td>
+									<a href="{% url 'idea-details' feedback.idea.id %}"
+										style="text-decoration: none; color:black;">
+										{{ feedback.idea.title }}
+									</a>
+								</td>
+								<td>
+									<a href="{% url 'profile_view' feedback.mentor.id %}"
 										style="text-decoration: none; color: black;">
 										{{ feedback.mentor.username }}
 									</a>
 								</td>
 								<td>{{ feedback.created_at|date:"d M Y" }}</td>
 								<td>
-									<a href="{% url 'feedback' feedback.id %}" class="btn btn-sm btn-info">View</a>
+									<!-- Toggle Accordion -->
+									<button class="btn btn-sm btn-info" data-bs-toggle="collapse"
+										data-bs-target="#feedbackDetails{{ feedback.id }}">
+										View
+									</button>
 								</td>
+							</tr>
+							<tr class="collapse" id="feedbackDetails{{ feedback.id }}">
+								<td colspan="4">
+									<strong>Mentor:</strong> {{ feedback.mentor.username }} <br>
+									{{ feedback.content|striptags }} <br>
+									<small class="text-muted">Given on: {{ feedback.created_at|date:"F j, Y, g:i a"
+										}}</small>
+									<!-- Acknowledge Button to Open Modal -->
+									<div class="text-end mt-2">
+										<button class="btn btn-sm btn-success" data-bs-toggle="modal"
+											data-bs-target="#acknowledgeModal{{ feedback.id }}">
+											Acknowledge
+										</button>
+									</div>
+									<div class="modal fade" id="acknowledgeModal{{ feedback.id }}" tabindex="-1"
+										aria-labelledby="acknowledgeModalLabel{{ feedback.id }}" aria-hidden="true">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="acknowledgeModalLabel{{ feedback.id }}">
+														Acknowledge Feedback</h5>
+													<button type="button" class="btn-close" data-bs-dismiss="modal"
+														aria-label="Close"></button>
+												</div>
+												<div class="modal-body">
+													<form action="{% url 'acknowledge_feedback' feedback.id %}"
+														method="POST">
+														{% csrf_token %}
+														<div class="mb-3">
+															<label for="responseContent{{ feedback.id }}"
+																class="form-label">Response Content</label>
+															<textarea class="form-control" name="response_content"
+																id="responseContent{{ feedback.id }}" rows="3"
+																required></textarea>
+														</div>
+														<button type="submit" class="btn btn-primary">Submit
+															Acknowledgment</button>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>
+								</td>
+
 							</tr>
 							{% empty %}
 							<tr>
@@ -198,6 +250,8 @@
 					</table>
 				</div>
 			</div>
+
+
 			<div class="row mt-5">
 				<div class="col-12">
 					<h4>Collaborators</h4>
@@ -234,7 +288,7 @@
 								</td>
 							</tr>
 
-							
+
 							{% empty %}
 							<tr>
 								<td colspan="4" class="text-center text-muted">No collaborators yet.</td>
