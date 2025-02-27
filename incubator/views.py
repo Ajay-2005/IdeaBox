@@ -456,8 +456,16 @@ def collaborator_dashboard(request):
 	if request.user.role!='collaborator':
 		messages.error(request, "Access Denied: Only collaborator can view this page.")
 		return redirect('home')
+	active_projects=Collaboration.objects.filter(collaborator=request.user).select_related('idea')
+	context={
+		"active_projects":active_projects,
+		"active_project_count":active_projects.count(),
+		"ideas":Idea.objects.all(),
+		"collaboration_requests":CollaborationRequest.objects.filter(requester=request.user),
+		"collaboration_request_count":CollaborationRequest.objects.filter(requester=request.user).count()
+	}
 	ideas=Idea.objects.all()
-	return render(request,'collaborator_dashboard.html',{'ideas':ideas})
+	return render(request,'collaborator_dashboard.html',context)
 
 
 @login_required

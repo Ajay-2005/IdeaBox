@@ -55,53 +55,28 @@
                 </div>
             </div>
 
-            <!-- Collaboration Requests Section -->
-            <div class="row mt-5" id="collaborationRequestsSection">
-                <div class="col-12">
-                    <h4>Collaboration Requests</h4>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Idea Title</th>
-                                <th>Submitted By</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>AI-Based Healthcare App</td>
-                                <td>John Doe</td>
-                                <td>Pending</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#collaborationRequestModal" data-idea-id="1">
-                                        Request
-                                    </button>
-                                    <button class="btn btn-sm btn-danger">Decline</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Blockchain for Supply Chain</td>
-                                <td>Jane Smith</td>
-                                <td>Accepted</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" disabled>Accepted</button>
-                                    <button class="btn btn-sm btn-danger" disabled>Declined</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Sustainable Energy Solutions</td>
-                                <td>Emily Johnson</td>
-                                <td>Declined</td>
-                                <td>
-                                    <button class="btn btn-sm btn-primary" disabled>Accepted</button>
-                                    <button class="btn btn-sm btn-danger" disabled>Declined</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Overview Cards -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Active Project</h5>
+                            <h2 class="text-primary">{{active_project_count}}</h2>
+                            <p class="card-text">Total feedback received on your ideas.</p>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Collaboration Requests</h5>
+                            <h2 class="text-success">{{collaboration_request_count}}</h2>
+                            <p class="card-text">Submitted collaboration_requests</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Idea Review Section -->
@@ -168,9 +143,45 @@
                     </div>
                 </div>
             </div>
+            <!-- Active Projects Section -->
+            <div class="row mt-5" id="activeProjectsSection">
+                <div class="col-12">
+                    <h4>Active Projects (Where You Are a Collaborator)</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Project Name</th>
+                                <th>Role</th>
+                                <th>Joined at</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in active_projects %}
+                            <tr>
+                                <td> {{ project.idea.title }}</a></td>
+                                <td>{{ project.role }}</td>
+                                <td>{{ project.joined_at }}</td>
+                                <td>
+                                    <a href="{% url 'idea-details' project.id %}"
+                                        class="btn btn-sm btn-info">View</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">You are not collaborating on any
+                                    projects.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         console.log("inside dom")

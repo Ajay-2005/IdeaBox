@@ -35,7 +35,7 @@ html {
 
 
 .hero-section {
-	background: linear-gradient(180deg,  #007BFF, #f1e7e7);
+	background: linear-gradient(180deg, #007BFF, #f1e7e7);
 	color: #FFFFFF;
 	height: 73vh;
 	display: flex;
@@ -237,6 +237,14 @@ html {
 	}
 
 }
+
+.feedback-content {
+	max-height: 200px;
+	overflow-y: auto;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
 /* Footer styles */
 .footer {
 	background-color: #333;
@@ -246,39 +254,38 @@ html {
 	position: relative;
 	bottom: 0;
 	width: 100%;
-  }
-  
-  .footer-content {
+}
+
+.footer-content {
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 0 20px;
-  }
-  
-  .footer p {
+}
+
+.footer p {
 	margin: 0;
 	font-size: 14px;
-  }
-  
-  .footer-links {
+}
+
+.footer-links {
 	list-style: none;
 	padding: 10px 0 0;
 	margin: 0;
 	display: flex;
 	justify-content: center;
 	gap: 15px;
-  }
-  
-  .footer-links li {
+}
+
+.footer-links li {
 	display: inline;
-  }
-  
-  .footer-links a {
+}
+
+.footer-links a {
 	color: #00bcd4;
 	text-decoration: none;
 	font-size: 14px;
-  }
-  
-  .footer-links a:hover {
+}
+
+.footer-links a:hover {
 	text-decoration: underline;
-  }
-  
+}
