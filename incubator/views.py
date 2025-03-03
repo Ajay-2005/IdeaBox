@@ -325,7 +325,7 @@ def submit_idea(request):
 			return JsonResponse({"status": "success", "message": "Idea submitted successfully!"}, status=201)
 		except Exception as e:
 			print(e)
-			return JsonResponse({"status": "error", "message": str(e)}, status=400)
+			return JsonResponse({"status": "error", "message": "Error occured during submiting idea"}, status=400)
 	return JsonResponse({"status": "error", "message": "Invalid request method."}, status=405)
 
 def edit_idea(request, idea_id):
@@ -422,7 +422,7 @@ def submit_feedback(request, idea_id):
 		except json.JSONDecodeError:
 			return JsonResponse({'success': False, 'message': 'Invalid JSON format.'})
 		except Exception as e:
-			return JsonResponse({'success': False, 'message': str(e)})
+			return JsonResponse({'success': False, 'message': "Error occuring during feedback submission."})
 	
 	return JsonResponse({'success': False, 'message': 'Invalid request method.'})
 @login_required
