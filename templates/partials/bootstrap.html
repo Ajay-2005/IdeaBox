@@ -29,7 +29,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
-<body>
+<body style="background-color: rgb(234, 234, 230);">
 	{%block navbar %}
 	<nav class="navbar navbar-expand-lg custom-navbar">
 		<div class="container-fluid">
@@ -58,7 +58,7 @@
 					</li>
 					{% else %}
 					<li class="nav-item">
-						<a class="nav-link text-white" href="#">signup</a>
+						<a class="nav-link text-white" href="{% url 'register' %}">signup</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link text-white" href="{% url 'login' %}">Login</a>
